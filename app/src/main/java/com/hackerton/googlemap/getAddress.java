@@ -1,13 +1,13 @@
 package com.hackerton.googlemap;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class getAddress extends AppCompatActivity {
 
@@ -19,12 +19,9 @@ public class getAddress extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_address);
-
         txt_address = findViewById(R.id.txt_address);
-
         // WebView 초기화
         init_webView();
-
         // 핸들러를 통한 JavaScript 이벤트 반응
         handler = new Handler();
     }
