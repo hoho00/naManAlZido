@@ -30,9 +30,11 @@ import androidx.core.content.ContextCompat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.hackerton.googlemap.data.ReviewContract;
 import com.hackerton.googlemap.data.ReviewDbHelper;
+import com.hackerton.googlemap.model.MapItem;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -50,6 +52,9 @@ public class AddReview extends AppCompatActivity {
     // 사용자 이름과 사진
     private String mUsername;
     private String mPhotoUrl;
+
+    private double latitude;
+    private double longitude;
 
 
     //gps
@@ -125,8 +130,8 @@ public class AddReview extends AppCompatActivity {
 
         gpsTracker = new GpsTracker(AddReview.this);
 
-        double latitude = gpsTracker.getLatitude();
-        double longitude = gpsTracker.getLongitude();
+        latitude = gpsTracker.getLatitude();
+        longitude = gpsTracker.getLongitude();
 
         String address = getCurrentAddress(latitude, longitude);
         curAddress = address;
@@ -359,6 +364,15 @@ public class AddReview extends AppCompatActivity {
             Toast.makeText(this, "리뷰가 작성되었습니다!! ", Toast.LENGTH_SHORT).show();
             String sendingString = "My name " + formatDate + " " + curAddress + " "  + contents.getText().toString() ;
             //setResult(RESULT_OK);
+
+            MapItem mapItem = new MapItem();
+            mapItem.setAddress(curAddress);
+            mapItem.setLatitude(latitude);
+            mapItem.setLongitude(longitude);
+
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference("Map");
+            reference.child("lee").setValue(mapItem);
 
             Intent intent = new Intent(AddReview.this, MainActivity.class);
             intent.putExtra("recent_review", sendingString);

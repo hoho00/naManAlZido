@@ -1,17 +1,15 @@
 package com.hackerton.googlemap;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -20,8 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.HashMap;
+import com.hackerton.googlemap.model.UserItem;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -82,14 +79,30 @@ public class RegisterActivity extends AppCompatActivity {
                         String uid = user.getUid();
                         String name = mName.getText().toString().trim();
 
+
+                        UserItem userItem = new UserItem();
+                        userItem.setId(email);
+                        userItem.setNickName(name);
+                        userItem.setAddress1("pusan");
+                        userItem.setAddress2("seoul");// 추가 해야됨
+                        userItem.setScore(0);
+                        userItem.setPhotoUrl("photo");//추가 해야됨
+
+                        /*
                         //해쉬맵 테이블을 파이어베이스 데이터베이스에 저장
                         HashMap<Object, String> hashMap = new HashMap<>();
                         hashMap.put("uid", uid);
                         hashMap.put("email", email);
                         hashMap.put("name", name);
+                        //hashMap.put("Address")
+                        hashMap.put("score", "0");
+
+                         */
                         FirebaseDatabase database = FirebaseDatabase.getInstance();
                         DatabaseReference reference = database.getReference("Users");
-                        reference.child(uid).setValue(hashMap);
+                        reference.child(uid).setValue(userItem);
+
+
 
                         //가입이 이루어져을시 가입 화면을 빠져나감.
                         Intent intent = new Intent(RegisterActivity.this, LogInActivity.class);
