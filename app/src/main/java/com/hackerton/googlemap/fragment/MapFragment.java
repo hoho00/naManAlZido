@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,12 +19,19 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.hackerton.googlemap.Content_Activity;
 import com.hackerton.googlemap.GpsTracker;
 import com.hackerton.googlemap.R;
+import com.hackerton.googlemap.model.MapItem;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
+    private DatabaseReference mFirebaseDatabaseReference;
     private GpsTracker gpsTracker;
     private LatLng current;
     GoogleMap MyMap;
@@ -133,17 +141,38 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         // 구글 맵 객체를 불러온다.
         MyMap = googleMap;
+        final MapItem[] mapItem = {new MapItem()};
+
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                   MapItem mapItem1 = snapshot1.getValue(MapItem.class);
+                    Toast.makeText(gpsTracker, mapItem1.getAddress(), Toast.LENGTH_SHORT).show();
+                   LatLng location = new LatLng(mapItem1.getLatitude(), mapItem1.getLongitude());
+
+                    MarkerOptions makerOptions = new MarkerOptions();
+                    makerOptions
+                            .position(location)
+                            .title("원하는 위치(위도, 경도)에 마커를 표시했습니다.");
+
+                    MyMap.addMarker(makerOptions);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
 
         LatLng seoul = new LatLng(37.52487, 126.92723);
 
 
-        MarkerOptions makerOptions = new MarkerOptions();
-        makerOptions
-                .position(current)
-                .title("원하는 위치(위도, 경도)에 마커를 표시했습니다.");
 
-        MyMap.addMarker(makerOptions);
         MyMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
@@ -152,6 +181,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 startActivity(intent);
             }
         });
-        MyMap.moveCamera(CameraUpdateFactory.newLatLng(current));
+        MyMap.moveCamera(CameraUpdateFactory.newLatLng(seoul));
     }
 }
