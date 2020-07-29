@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".AddReview">
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_launcher_foreground"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/addressText1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="address"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView1"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/timeText1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="time"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addressText1"
+        android:layout_gravity="center"/>
+
+    <EditText
+        android:id="@+id/editTextTextMultiLine"
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:hint="이 곳을 방문 한 간단한 후기를 작성해 주세요!!"
+        android:inputType="textMultiLine"
+        tools:layout_editor_absoluteX="58dp"
+        tools:layout_editor_absoluteY="385dp" />
+
+    <Button
+        android:id="@+id/submitStart"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="submit"
+        android:onClick="certi_camera_submit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timeText1"/>
+
+</LinearLayout>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TabHost
+        android:id="@+id/tabHost1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- FrameLayout의 id값이 반드시 "tabcontent"로 지정되어야 함. -->
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- 첫 번째 페이지. content1 -->
+                <LinearLayout
+                    android:id="@+id/content1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#8BC34A"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="TAB CONTENT 1" />
+
+
+                    <com.google.android.gms.maps.MapView
+                        android:name="com.google.android.gms.maps.MapFragment"
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:id="@+id/review_map"/>
+
+                </LinearLayout>
+
+                <!-- 두 번째 페이지. content2 -->
+                <LinearLayout
+                    android:id="@+id/content2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#009688"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="TAB CONTENT 2" />
+
+                    <com.google.android.gms.maps.MapView
+                        android:name="com.google.android.gms.maps.MapFragment"
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:id="@+id/community_map"/>
+
+                </LinearLayout>
+
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
