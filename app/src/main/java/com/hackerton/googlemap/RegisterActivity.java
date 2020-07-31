@@ -23,8 +23,14 @@ import com.hackerton.googlemap.model.UserItem;
 public class RegisterActivity extends AppCompatActivity {
 
     private static final String TAG = "RegisterActivity";
-    EditText mEmailText, mPasswordText, mPasswordcheckText, mName;
+    private EditText mEmailText, mPasswordText, mPasswordcheckText, mName;
     private FirebaseAuth firebaseAuth;
+
+
+    private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
+
+    private EditText et_address, et_address2;
+    private static boolean address1, address2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,8 @@ public class RegisterActivity extends AppCompatActivity {
         mPasswordText = findViewById(R.id.password_edit);
         mPasswordcheckText = findViewById(R.id.passwordcheck_edit);
         mName = findViewById(R.id.name_edit);
+        et_address = findViewById(R.id.et_address);
+        et_address2 = findViewById(R.id.et_address2);
 
         //파이어베이스 user 로 접글
 
@@ -78,13 +86,16 @@ public class RegisterActivity extends AppCompatActivity {
                         String email = user.getEmail();
                         String uid = user.getUid();
                         String name = mName.getText().toString().trim();
+                        String address1 = et_address.getText().toString();
+                        String address2 = et_address2.getText().toString();
+
 
 
                         UserItem userItem = new UserItem();
                         userItem.setId(email);
                         userItem.setNickName(name);
-                        userItem.setAddress1("pusan");
-                        userItem.setAddress2("seoul");// 추가 해야됨
+                        userItem.setAddress1(address1);
+                        userItem.setAddress2(address2);// 추가 해야됨
                         userItem.setScore(0);
                         userItem.setPhotoUrl("photo");//추가 해야됨
 
@@ -130,5 +141,36 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void register_address1_btn(View view) {
+        address1 = true;
+        address2 = false;
+        Intent intent = new Intent(this, WebViewActivity.class);
+        startActivityForResult(intent, SEARCH_ADDRESS_ACTIVITY);
+    }
+
+    public void register_address2_btn(View view) {
+        address1 = false;
+        address2 = true;
+        Intent intent = new Intent(this, WebViewActivity.class);
+        startActivityForResult(intent, SEARCH_ADDRESS_ACTIVITY);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent){
+        super.onActivityResult(requestCode, resultCode, intent);
+        switch(requestCode){
+            case SEARCH_ADDRESS_ACTIVITY:
+                if(resultCode == RESULT_OK){
+                    String data = intent.getExtras().getString("data");
+                    //String school  = intent.getExtras().getString("buildingName");
+                    if (data != null)
+                        if(address1 && !address2) {
+                            et_address.setText(data);
+                        }
+                        else if(!address1 && address2) {
+                            et_address2.setText(data);
+                        }
+
+                }
+                break;
+        }
     }
 }

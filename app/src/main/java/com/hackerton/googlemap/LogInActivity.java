@@ -14,18 +14,23 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class LogInActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     EditText mEmailText, mPasswordText;
     private Button login, register;
+    boolean autoLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+
+        Intent intent = new Intent(getIntent());
+        String isMainBack;
+
+
         firebaseAuth =  FirebaseAuth.getInstance();
         login = (Button)findViewById(R.id.login_btn);
         register = (Button)findViewById(R.id.register_btn);
@@ -62,16 +67,16 @@ public class LogInActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        //firebaseAuth.startActivityForSignInWithProvider()
-        if(user != null) {
-            Toast.makeText(this, "자동 로그인", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, MainActivity.class));
-        }
-    }
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        FirebaseUser user = firebaseAuth.getCurrentUser();
+//        //firebaseAuth.startActivityForSignInWithProvider()
+//        if(user != null) {
+//            Toast.makeText(this, "자동 로그인", Toast.LENGTH_SHORT).show();
+//            startActivity(new Intent(this, MainActivity.class));
+//        }
+//    }
 
 //    public void login_btn(View view) {
 //        //firebaseAuth =  FirebaseAuth.getInstance();
