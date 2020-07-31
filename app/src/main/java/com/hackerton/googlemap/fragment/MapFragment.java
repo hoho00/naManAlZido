@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -149,7 +148,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                    MapItem mapItem1 = snapshot1.getValue(MapItem.class);
-                    Toast.makeText(gpsTracker, mapItem1.getAddress(), Toast.LENGTH_SHORT).show();
+                   //Toast.makeText(gpsTracker, mapItem1.getAddress(), Toast.LENGTH_SHORT).show();
                    LatLng location = new LatLng(mapItem1.getLatitude(), mapItem1.getLongitude());
 
                     MarkerOptions makerOptions = new MarkerOptions();

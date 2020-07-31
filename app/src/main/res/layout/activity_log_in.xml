@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         tools:srcCompat="@tools:sample/avatars[3]"
+        android:src="@drawable/logo"
         android:layout_margin="50dp"/>
 
     <EditText
@@ -29,15 +30,21 @@
         android:inputType="textPassword" />
 
     <Button
-        android:onClick="login_btn"
+        android:id="@+id/login_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="로그인" />
 
     <Button
-        android:onClick="register_btn"
+        android:id="@+id/register_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="가입" />
+
+    <Button
+        android:onClick="auto_login_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="기존정보로 로그인"/>
 
 </LinearLayout>
