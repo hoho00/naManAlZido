@@ -98,14 +98,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    public void store_view(View view) {
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(this, LogInActivity.class);
+        intent.putExtra("IsMainBack", 1);
+        setResult(RESULT_OK);
+        startActivity(new Intent(this, LogInActivity.class));
     }
 
     public void add_review(View view) {
         startActivity(new Intent(MainActivity.this, AddReview.class));
     }
 
-    public void community_view(View view) {
-    }
 }
