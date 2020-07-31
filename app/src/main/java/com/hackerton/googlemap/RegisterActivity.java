@@ -89,13 +89,11 @@ public class RegisterActivity extends AppCompatActivity {
                         String address1 = et_address.getText().toString();
                         String address2 = et_address2.getText().toString();
 
-
-
                         UserItem userItem = new UserItem();
                         userItem.setId(email);
                         userItem.setNickName(name);
                         userItem.setAddress1(address1);
-                        userItem.setAddress2(address2);// 추가 해야됨
+                        userItem.setAddress2(address2);
                         userItem.setScore(0);
                         userItem.setPhotoUrl("photo");//추가 해야됨
 
@@ -168,7 +166,6 @@ public class RegisterActivity extends AppCompatActivity {
                         else if(!address1 && address2) {
                             et_address2.setText(data);
                         }
-
                 }
                 break;
         }
