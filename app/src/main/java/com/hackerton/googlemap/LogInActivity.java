@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -67,16 +68,16 @@ public class LogInActivity extends AppCompatActivity {
         });
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        FirebaseUser user = firebaseAuth.getCurrentUser();
-//        //firebaseAuth.startActivityForSignInWithProvider()
-//        if(user != null) {
-//            Toast.makeText(this, "자동 로그인", Toast.LENGTH_SHORT).show();
-//            startActivity(new Intent(this, MainActivity.class));
-//        }
-//    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        //firebaseAuth.startActivityForSignInWithProvider()
+        if(user != null) {
+            Toast.makeText(this, "자동 로그인", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, MainActivity.class));
+        }
+    }
 
 //    public void login_btn(View view) {
 //        //firebaseAuth =  FirebaseAuth.getInstance();
