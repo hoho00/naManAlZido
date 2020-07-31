@@ -25,19 +25,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".getAddress"></activity>
-        <activity android:name=".AddReview" />
-        <activity android:name=".LogInActivity">
+        <activity android:name=".IntroActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".getAddress" />
+        <activity android:name=".AddReview" />
+        <activity android:name=".LogInActivity">
+        </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".Content_Activity" />
         <activity android:name=".RegisterActivity" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAEqR94yw9ISJQEQlLXAahlgZmXU9qGOX0" />
