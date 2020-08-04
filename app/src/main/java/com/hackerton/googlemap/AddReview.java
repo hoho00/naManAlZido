@@ -2,12 +2,9 @@ package com.hackerton.googlemap;
 
 
 import android.Manifest;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
@@ -27,14 +24,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.hackerton.googlemap.data.ReviewContract;
-import com.hackerton.googlemap.data.ReviewDbHelper;
 import com.hackerton.googlemap.model.MapItem;
+import com.hackerton.googlemap.model.ReviewItem;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -55,6 +52,7 @@ public class AddReview extends AppCompatActivity {
 
     private double latitude;
     private double longitude;
+    private LatLng curLatLng;
 
 
     //gps
@@ -132,6 +130,8 @@ public class AddReview extends AppCompatActivity {
 
         latitude = gpsTracker.getLatitude();
         longitude = gpsTracker.getLongitude();
+
+        curLatLng = new LatLng(latitude, longitude);
 
         String address = getCurrentAddress(latitude, longitude);
         curAddress = address;
@@ -344,42 +344,34 @@ public class AddReview extends AppCompatActivity {
     }
 
     public void certi_camera_submit(View view) {
-        ReviewDbHelper dbHelper = ReviewDbHelper.getInstance(this);
-        Cursor cursor = dbHelper.getReadableDatabase()
-                .query(ReviewContract.ReviewEntry.TABLE_NAME, null, null, null, null, null, null);
-
         EditText contents = (EditText) findViewById(R.id.editTextTextMultiLine);
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(ReviewContract.ReviewEntry.COLUMN_NAME_NAME, "My name");
-        contentValues.put(ReviewContract.ReviewEntry.COLUMN_NAME_ADDRESS, curAddress);
-        contentValues.put(ReviewContract.ReviewEntry.COLUMN_NAME_TIMESTAMP, formatDate);
-        contentValues.put(ReviewContract.ReviewEntry.COLUMN_NAME_CONTENTS, contents.getText().toString());
-        contentValues.put(ReviewContract.ReviewEntry.COLUMN_NAME_SCORE, 50);//초기값 일단 50으로 잡아 둔다.
-        SQLiteDatabase db = ReviewDbHelper.getInstance(this).getWritableDatabase();
-        long newRowId = db.insert(ReviewContract.ReviewEntry.TABLE_NAME, null, contentValues);
 
-        if (newRowId == -1) {
-            Toast.makeText(this, "저장에 문제가 생겼습니다.", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "리뷰가 작성되었습니다!! ", Toast.LENGTH_SHORT).show();
-            String sendingString = "My name " + formatDate + " " + curAddress + " "  + contents.getText().toString() ;
-            //setResult(RESULT_OK);
+        String reviewString = contents.getText().toString();
+        //setResult(RESULT_OK);
 
-            MapItem mapItem = new MapItem();
-            mapItem.setAddress(curAddress);
-            mapItem.setLatitude(latitude);
-            mapItem.setLongitude(longitude);
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        MapItem mapItem = new MapItem();
+        mapItem.setAddress(curAddress);
+        mapItem.setLatLng(curLatLng);
 
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference reference = database.getReference("Map");
-            reference.child("lee").setValue(mapItem);
+        ReviewItem reviewItem = new ReviewItem();
+        reviewItem.setId(null);
+        reviewItem.setImageUrls(null);
+        reviewItem.setName(mFirebaseUser.getDisplayName());
+        reviewItem.setPhotoUrl(null);
+        reviewItem.setReview(reviewString);
+        reviewItem.setScore(50);
+        reviewItem.setTime(null);
+        reviewItem.setLatitude(curLatLng.latitude);
+        reviewItem.setLongitude(curLatLng.longitude);
 
-            Intent intent = new Intent(AddReview.this, MainActivity.class);
-            intent.putExtra("recent_review", sendingString);
-            intent.putExtra("recent_date", formatDate);
-            setResult(RESULT_OK);
-            startActivity(intent);
-            //startActivity(new Intent(AddReview.this,MainActivity.class));
-        }
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference reference = database.getReference("Map");
+        DatabaseReference reviewReference = database.getReference("reviews");
+        reference.push().setValue(mapItem);
+        reviewReference.push().setValue(reviewItem);
+        startActivity(new Intent(AddReview.this,Content_Activity.class));
     }
+
 }

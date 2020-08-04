@@ -1,32 +1,16 @@
 package com.hackerton.googlemap.model;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class MapItem {
-    private double latitude;
-    private double longitude;
     private String address;
+    private LatLng latLng;
 
     public MapItem(){}
 
-    public MapItem(double latitude, double longitude, String address) {
-        this.latitude = latitude;
-        this.longitude = longitude;
+    public MapItem(String address, LatLng latLng) {
         this.address = address;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+        this.latLng = latLng;
     }
 
     public String getAddress() {
@@ -35,5 +19,13 @@ public class MapItem {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public LatLng getLatLng() {
+        return latLng;
+    }
+
+    public void setLatLng(LatLng latLng) {
+        this.latLng = latLng;
     }
 }

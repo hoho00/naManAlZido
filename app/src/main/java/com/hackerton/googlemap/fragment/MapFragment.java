@@ -18,11 +18,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.hackerton.googlemap.Content_Activity;
 import com.hackerton.googlemap.GpsTracker;
 import com.hackerton.googlemap.R;
@@ -143,32 +140,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         final MapItem[] mapItem = {new MapItem()};
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mFirebaseDatabaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                   MapItem mapItem1 = snapshot1.getValue(MapItem.class);
-                   //Toast.makeText(gpsTracker, mapItem1.getAddress(), Toast.LENGTH_SHORT).show();
-                   LatLng location = new LatLng(mapItem1.getLatitude(), mapItem1.getLongitude());
-
-                    MarkerOptions makerOptions = new MarkerOptions();
-                    makerOptions
-                            .position(location)
-                            .title("원하는 위치(위도, 경도)에 마커를 표시했습니다.");
-
-                    MyMap.addMarker(makerOptions);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
 
 
         LatLng seoul = new LatLng(37.52487, 126.92723);
+
+        MarkerOptions makerOptions = new MarkerOptions();
+        makerOptions
+                .position(seoul)
+                .title("원하는 위치(위도, 경도)에 마커를 표시했습니다.");
+
+        MyMap.addMarker(makerOptions);
+
+        MarkerOptions makerOptions2 = new MarkerOptions();
+        makerOptions2
+                .position(current)
+                .title("원하는 위치(위도, 경도)에 마커를 표시했습니다.");
+        MyMap.addMarker(makerOptions2);
 
 
 
@@ -176,7 +163,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Intent intent = new Intent(getContext(), Content_Activity.class);
-                intent.putExtra("recent_review", sendingString);
+                //intent.putExtra("recent_review", sendingString);
+                //intent.putExtra("latlng",current);
                 startActivity(intent);
             }
         });

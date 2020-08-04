@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.hackerton.googlemap.model.UserItem;
@@ -79,10 +80,12 @@ public class RegisterActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
 
+
                     //가입 성공시
                     if (task.isSuccessful()) {
                         mDialog.dismiss();
                         FirebaseUser user = firebaseAuth.getCurrentUser();
+
                         String email = user.getEmail();
                         String uid = user.getUid();
                         String name = mName.getText().toString().trim();
@@ -96,6 +99,10 @@ public class RegisterActivity extends AppCompatActivity {
                         userItem.setAddress2(address2);
                         userItem.setScore(0);
                         userItem.setPhotoUrl("photo");//추가 해야됨
+
+                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                .setDisplayName(name).build();
+                        user.updateProfile(profileUpdates);
 
                         /*
                         //해쉬맵 테이블을 파이어베이스 데이터베이스에 저장

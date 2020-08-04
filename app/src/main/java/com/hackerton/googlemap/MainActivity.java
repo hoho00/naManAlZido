@@ -18,6 +18,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.hackerton.googlemap.fragment.MapFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private Context context = this;
     private FloatingActionButton fab;
+    private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
 
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
@@ -39,16 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent = new Intent(this.getIntent());
-        String sendingString = intent.getStringExtra("recent_review");
-        String formatdate = intent.getStringExtra("recent_date");
-        if(sendingString != null) {
-            Toast.makeText(context, sendingString + " success", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(MainActivity.this, Content_Activity.class);
-            i.putExtra("recent_review", sendingString);
-            i.putExtra("recent_date", formatdate);
-            startActivity(i);
-        }
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
+        Toast.makeText(context, mUser.getEmail(), Toast.LENGTH_SHORT).show();
         // 플롯팅 액션 버튼
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +79,9 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.setting) {
                     Toast.makeText(context, title + ": 설정 정보를 확인합니다.", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.logout) {
-                    Toast.makeText(context, title + ": 로그아웃 시도중", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, title + ": 로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
+                    mAuth.signOut();
+                    toLogin();
                 }
 
                 return true;
@@ -90,6 +89,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    private void toLogin() {
+        startActivity(new Intent(this, LogInActivity.class));
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -128,4 +132,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this, AddReview.class));
     }
 
+    public void check_my_review(View view) {
+
+    }
 }

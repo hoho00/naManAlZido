@@ -23,10 +23,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".WebViewActivity"></activity>
+        <activity android:name=".CheckMyReview"></activity>
+        <activity android:name=".WebViewActivity" />
         <activity android:name=".IntroActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,7 +37,7 @@
         </activity>
         <activity android:name=".getAddress" />
         <activity android:name=".AddReview" />
-        <activity android:name=".LogInActivity"></activity>
+        <activity android:name=".LogInActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".Content_Activity" />
         <activity android:name=".RegisterActivity" />

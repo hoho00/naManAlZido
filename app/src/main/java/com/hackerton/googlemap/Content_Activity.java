@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -28,7 +29,10 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.hackerton.googlemap.Adapter.GridViewAdapter;
 import com.hackerton.googlemap.model.GridViewItem;
+import com.hackerton.googlemap.model.ReviewItem;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,6 +62,18 @@ public class Content_Activity extends AppCompatActivity {
     private String mUsername;
     private String mPhotoUrl;
 
+    private LatLng markerLocation;
+    private GpsTracker gpsTracker;
+    private String address;
+
+    long now = System.currentTimeMillis();
+    // 현재시간을 date 변수에 저장한다.
+    Date date = new Date(now);
+    // 시간을 나타냇 포맷을 정한다 ( yyyy/MM/dd 같은 형태로 변형 가능 )
+    SimpleDateFormat sdfNow = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+    // nowDate 변수에 값을 저장한다.
+    String formatDate = sdfNow.format(date);
+
 
     GridViewAdapter adapter;
 
@@ -73,6 +89,7 @@ public class Content_Activity extends AppCompatActivity {
             messageImageView = itemView.findViewById(R.id.messageImageView);
             messengerTextView = itemView.findViewById(R.id.messengerTextView);
             messengerImageView = itemView.findViewById(R.id.messengerImageView);
+
         }
     }
 
@@ -81,11 +98,7 @@ public class Content_Activity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_activity);
-        Intent intent = new Intent(this.getIntent());
-        String sendingString = intent.getStringExtra("recent_review");
-        if(sendingString != null) {
-            Toast.makeText(this, sendingString + " content activity success!!", Toast.LENGTH_SHORT).show();
-        }
+
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         if (mFirebaseUser == null) {
@@ -104,19 +117,6 @@ public class Content_Activity extends AppCompatActivity {
 
         // Firebase 리얼타임 데이터 베이스 초기화
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        if(sendingString != null) {
-            ReviewItem reviewItem = new ReviewItem(sendingString,
-                    mUsername,
-                    mPhotoUrl,
-                    null,
-                    null,
-                    50);
-            mFirebaseDatabaseReference.child("reviews")
-                    .push()
-                    .setValue(reviewItem);
-
-            Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
-        }
 
         Query query = mFirebaseDatabaseReference.child(MESSAGES_CHILD);
 
@@ -128,9 +128,9 @@ public class Content_Activity extends AppCompatActivity {
 
         mFirebaseAdapter = new FirebaseRecyclerAdapter<ReviewItem, ReviewViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(ReviewViewHolder holder, int position, ReviewItem model) {
+            protected void onBindViewHolder(ReviewViewHolder holder, final int position, ReviewItem model) {
                 holder.messageTextView.setText(model.getReview());
-                holder.messengerTextView.setText(model.getName());
+                holder.messengerTextView.setText(model.getName() + "에 의해 작성된 리뷰입니다.");
                 if (model.getPhotoUrl() == null) {
                     holder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(Content_Activity.this,
                             R.drawable.ic_account_circle_black_24dp));
@@ -139,6 +139,14 @@ public class Content_Activity extends AppCompatActivity {
                             .load(model.getPhotoUrl())
                             .into(holder.messengerImageView);
                 }
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(Content_Activity.this, CheckMyReview.class));
+                        Toast.makeText(Content_Activity.this, mFirebaseUser.getDisplayName() + "님께서 작성하신 리뷰 입니다." + (position  + 1) + "번째 리뷰 입니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override

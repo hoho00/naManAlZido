@@ -1,4 +1,4 @@
-package com.hackerton.googlemap;
+package com.hackerton.googlemap.model;
 
 import java.util.ArrayList;
 
@@ -10,16 +10,21 @@ public class ReviewItem {
     private ArrayList<String> imageUrls;
     private String time;
     private int Score;
+    private double latitude;
+    private double longitude;
 
     public ReviewItem(){}
 
-    public ReviewItem(String review, String name, String photoUrl, ArrayList<String> imageUrls, String time, int score) {
+    public ReviewItem(String id, String review, String name, String photoUrl, ArrayList<String> imageUrls, String time, int score, double latitude, double longitude) {
+        this.id = id;
         this.review = review;
         this.name = name;
         this.photoUrl = photoUrl;
         this.imageUrls = imageUrls;
         this.time = time;
         Score = score;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public String getId() {
@@ -76,5 +81,21 @@ public class ReviewItem {
 
     public void setScore(int score) {
         Score = score;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }
