@@ -17,7 +17,6 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:paddingTop="8dp"
-        app:srcCompat="@drawable/profile_1"
         android:contentDescription="Navigation header"
         android:id="@+id/imageView"/>
 
@@ -25,13 +24,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
-        android:text="hi"
+        android:id="@+id/header_name_textView"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="hello"
-        android:id="@+id/textView"/>
+        android:id="@+id/header_email_textView"/>
 
 </LinearLayout>
