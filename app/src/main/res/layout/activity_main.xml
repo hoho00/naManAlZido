@@ -8,11 +8,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/content_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:orientation="vertical"
         tools:context=".MainActivity">
 
         <androidx.appcompat.widget.Toolbar
@@ -29,16 +30,16 @@
                 android:layout_gravity="center" />
         </androidx.appcompat.widget.Toolbar>
 
-        <fragment
+        <androidx.viewpager.widget.ViewPager
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar"
-            tools:layout="@layout/fragment_map"
-            android:name="com.hackerton.googlemap.fragment.MapFragment">
-        </fragment>
+            android:layout_height="465dp"
+            android:id="@+id/main_viewpager"/>
+        <com.google.android.material.tabs.TabLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/main_tablayout"/>
 
-
-    </RelativeLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,7 +54,8 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="15sp"
             android:backgroundTint="#DC192D"
-            android:src="@drawable/ic_add_foreground"/>
+            android:src="@drawable/ic_add_foreground"
+            android:onClick="add_review"/>
 
     </LinearLayout>
 
