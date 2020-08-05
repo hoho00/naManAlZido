@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -18,6 +19,10 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.hackerton.googlemap.fragment.MapFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,10 +30,21 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private Context context = this;
     private FloatingActionButton fab;
+    private TextView header_nameTextView;
+    private TextView header_emailTextView;
+
+    private TextView nameTextView;
+    private TextView emailTextView;
+
+    private FirebaseAuth auth;
+    private FirebaseUser user;
 
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     MapFragment mapFragment;
+
+
+
 
     // 마지막으로 뒤로가기 버튼을 눌렀던 시간 저장
     private long backKeyPressedTime = 0;
@@ -38,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
         setContentView(R.layout.activity_main);
         Intent intent = new Intent(this.getIntent());
         String sendingString = intent.getStringExtra("recent_review");
@@ -67,7 +87,21 @@ public class MainActivity extends AppCompatActivity {
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference("Users");
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View view = navigationView.getHeaderView(0);
+
+        // 네비게이션바 이름, 이메일 표시
+        header_nameTextView = (TextView) view.findViewById(R.id.header_name_textView);
+        header_emailTextView = (TextView) view.findViewById(R.id.header_email_textView);
+
+        header_nameTextView.setText(user.getDisplayName());   // 파이어베이스 이름 불러오기
+        header_emailTextView.setText(user.getEmail());        // 파이어베이스 이메일 불러오기
+
+
+
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -79,10 +113,21 @@ public class MainActivity extends AppCompatActivity {
 
                 if (id == R.id.account) {
                     Toast.makeText(context, title + ": 계정 정보를 확인합니다.", Toast.LENGTH_SHORT).show();
+                    if(auth != null){
+                        Toast.makeText(context, " 정보 확인 ", Toast.LENGTH_SHORT).show();
+
+                        Intent intent1 = new Intent(MainActivity.this, MyPage.class);
+                        startActivity(intent1);
+
+                    }
                 } else if (id == R.id.setting) {
                     Toast.makeText(context, title + ": 설정 정보를 확인합니다.", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.logout) {
-                    Toast.makeText(context, title + ": 로그아웃 시도중", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, title + ": 로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
+                    auth.signOut();
+                    finish();
+                    Intent intent3 = new Intent(MainActivity.this, LogInActivity.class);
+                    startActivity(intent3);
                 }
 
                 return true;
