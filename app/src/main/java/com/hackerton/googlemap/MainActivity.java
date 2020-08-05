@@ -16,14 +16,18 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
+import com.hackerton.googlemap.Adapter.PageAdapter;
+import com.hackerton.googlemap.fragment.CommunityMapfragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.hackerton.googlemap.fragment.MapFragment;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,7 +45,10 @@ public class MainActivity extends AppCompatActivity {
 
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-    MapFragment mapFragment;
+    CommunityMapfragment mapFragment;
+
+    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
 
 
 
@@ -62,13 +69,41 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this.getIntent());
         String sendingString = intent.getStringExtra("recent_review");
         String formatdate = intent.getStringExtra("recent_date");
-        if(sendingString != null) {
-            Toast.makeText(context, sendingString + " success", Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(MainActivity.this, Content_Activity.class);
-            i.putExtra("recent_review", sendingString);
-            i.putExtra("recent_date", formatdate);
-            startActivity(i);
-        }
+
+        mTabLayout = (TabLayout) findViewById(R.id.main_tablayout);
+        mTabLayout.addTab(mTabLayout.newTab().setText("Tab One"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("Tab Two"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("Tab Three"));
+        mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+
+        // Initializing ViewPager
+        mViewPager = (ViewPager) findViewById(R.id.main_viewpager);
+
+        // Creating TabPagerAdapter adapter
+        PageAdapter pagerAdapter = new PageAdapter(getSupportFragmentManager(), mTabLayout.getTabCount());
+        mViewPager.setAdapter(pagerAdapter);
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+
+        // Set TabSelectedListener
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mViewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
         // 플롯팅 액션 버튼
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

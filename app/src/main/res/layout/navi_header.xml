@@ -17,6 +17,7 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:paddingTop="8dp"
+        app:srcCompat="@drawable/logo"
         android:contentDescription="Navigation header"
         android:id="@+id/imageView"/>
 
