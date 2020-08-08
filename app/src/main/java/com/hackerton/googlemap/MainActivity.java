@@ -3,6 +3,7 @@ package com.hackerton.googlemap;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -21,6 +22,9 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.hackerton.googlemap.Adapter.PageAdapter;
 import com.hackerton.googlemap.fragment.CommunityMapfragment;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,9 +54,6 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
 
-
-
-
     // 마지막으로 뒤로가기 버튼을 눌렀던 시간 저장
     private long backKeyPressedTime = 0;
     // 첫 번째 뒤로가기 버튼을 누를때 표시
@@ -73,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout = (TabLayout) findViewById(R.id.main_tablayout);
         mTabLayout.addTab(mTabLayout.newTab().setText("Tab One"));
         mTabLayout.addTab(mTabLayout.newTab().setText("Tab Two"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("Tab Three"));
         mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 

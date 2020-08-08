@@ -372,7 +372,7 @@ public class AddReview extends AppCompatActivity {
 
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference reference = database.getReference("Map");
-            reference.child("lee").setValue(mapItem);
+            reference.push().setValue(mapItem);
 
             Intent intent = new Intent(AddReview.this, MainActivity.class);
             intent.putExtra("recent_review", sendingString);

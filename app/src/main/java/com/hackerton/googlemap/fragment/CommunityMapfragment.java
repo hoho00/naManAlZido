@@ -1,7 +1,10 @@
 package com.hackerton.googlemap.fragment;
 
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +22,21 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.hackerton.googlemap.Content_Activity;
 import com.hackerton.googlemap.R;
+import com.hackerton.googlemap.model.MapItem;
+
+import java.util.ArrayList;
 
 public class CommunityMapfragment extends Fragment implements OnMapReadyCallback {
     GoogleMap MyMap;
     private MapView mapView = null;
+
+    private ArrayList<MapItem> MarkerList;
 
     public CommunityMapfragment(){
 
@@ -107,14 +119,11 @@ public class CommunityMapfragment extends Fragment implements OnMapReadyCallback
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        LatLng SEOUL = new LatLng(37.56, 126.97);
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(SEOUL);
-        markerOptions.title("서울");
-        markerOptions.snippet("수도");
-        googleMap.addMarker(markerOptions);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(SEOUL));
+    public void onMapReady(final GoogleMap googleMap) {
+
+
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(37.52487, 126.92723)));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
 
     }
