@@ -18,8 +18,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.hackerton.googlemap.Content_Activity;
 import com.hackerton.googlemap.R;
+import com.hackerton.googlemap.model.MapItem;
 
 public class ReviewMapfragment extends Fragment implements OnMapReadyCallback {
 
@@ -108,29 +113,34 @@ public class ReviewMapfragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         // 구글 맵 객체를 불러온다.
-
-        LatLng seoul = new LatLng(37.52487, 126.92723);
-
-        MarkerOptions makerOptions = new MarkerOptions();
-
-        for(int i = 0; i < 10; i++) {
-            LatLng a = new LatLng(seoul.latitude+i,seoul.longitude+i);
-            makerOptions
-                    .position(a)
-                    .title("원하는 위치(" + a.latitude +", 경도)에 마커를 표시했습니다.");
-
-            googleMap.addMarker(makerOptions);
-            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    Intent intent = new Intent(getContext(), Content_Activity.class);
-                    startActivity(intent);
+        final MarkerOptions markerOptions = new MarkerOptions();
+        FirebaseDatabase.getInstance().getReference("Map").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    double latitude = snapshot.getValue(MapItem.class).getLatitude();
+                    double longitude = snapshot.getValue(MapItem.class).getLongitude();
+                    markerOptions.position(new LatLng(latitude,longitude));
+                    markerOptions.title(snapshot.getValue(MapItem.class).getAddress());
+                    googleMap.addMarker(markerOptions);
                 }
-            });
-        }
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(seoul));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Intent intent = new Intent(getContext(), Content_Activity.class);
+                startActivity(intent);
+            }
+        });
     }
 
 }

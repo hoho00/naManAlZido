@@ -1,5 +1,7 @@
 package com.hackerton.googlemap.model;
 
+import androidx.annotation.NonNull;
+
 public class MapItem {
     private double latitude;
     private double longitude;
@@ -35,5 +37,11 @@ public class MapItem {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return address;
     }
 }

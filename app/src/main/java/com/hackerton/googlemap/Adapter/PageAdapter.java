@@ -31,9 +31,6 @@ public class PageAdapter extends FragmentStatePagerAdapter {
             case 1:
                 CommunityMapfragment tabFragment2 = new CommunityMapfragment();
                 return tabFragment2;
-            case 2:
-                ReviewMapfragment tabFragment3 = new ReviewMapfragment();
-                return tabFragment3;
             default:
                 return null;
         }
