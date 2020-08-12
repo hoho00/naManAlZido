@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,11 +35,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
 
     private DrawerLayout mDrawerLayout;
     private Context context = this;
-    private FloatingActionButton fab;
+
     private TextView header_nameTextView;
     private TextView header_emailTextView;
 
@@ -59,14 +61,19 @@ public class MainActivity extends AppCompatActivity {
     // 첫 번째 뒤로가기 버튼을 누를때 표시
     private Toast toast;
 
+    //floating button
+    private FloatingActionButton fab, fab1, fab2;
+    private Animation fab_open, fab_close;
+    private Boolean isFabOpen = false;
+
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        setContentView(R.layout.activity_main);
         Intent intent = new Intent(this.getIntent());
         String sendingString = intent.getStringExtra("recent_review");
         String formatdate = intent.getStringExtra("recent_date");
@@ -105,13 +112,31 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // 플롯팅 액션 버튼
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab  = (FloatingActionButton) findViewById(R.id.fab);
+        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
+        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+
+        fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+        fab_close = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
+
+        fab.setOnClickListener(this);
+
+        fab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 add_review(view);
             }
         });
+
+        fab2.setOnClickListener(this);
+/*
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                add_review_existing(view);
+            }
+        });
+*/
 
         //startActivity(intent);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -172,6 +197,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.fab:
+                anim();
+                //Toast.makeText(this, "Floating Action Button", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.fab1:
+                anim();
+                //Toast.makeText(this, "Button1", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.fab2:
+                anim();
+                //Toast.makeText(this, "Button2", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: { // 햄버거 버튼 눌렀을 때
@@ -206,6 +252,27 @@ public class MainActivity extends AppCompatActivity {
 
     public void add_review(View view) {
         startActivity(new Intent(MainActivity.this, AddReview.class));
+    }
+
+    public void add_review_existing(View view) {
+        startActivity(new Intent(MainActivity.this, AddReviewExisting.class));
+    }
+
+    public void anim() {
+
+        if (isFabOpen) {
+            fab1.startAnimation(fab_close);
+            fab2.startAnimation(fab_close);
+            fab1.setClickable(false);
+            fab2.setClickable(false);
+            isFabOpen = false;
+        } else {
+            fab1.startAnimation(fab_open);
+            fab2.startAnimation(fab_open);
+            fab1.setClickable(true);
+            fab2.setClickable(true);
+            isFabOpen = true;
+        }
     }
 
 }
