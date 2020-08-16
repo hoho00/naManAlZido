@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -67,7 +68,7 @@ public class PopupActivity extends Activity {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
 
                     //위치가 같으면
@@ -90,8 +91,18 @@ public class PopupActivity extends Activity {
                         final int score = snapshot.child("score").getValue(int.class);
 
                         if(uid.equals(user.getUid())) {
-                            button1.setText("수정");
+                            button1.setVisibility(View.INVISIBLE);
                             button2.setText("삭제");
+                            button2.setGravity(Gravity.CENTER);
+
+                            button2.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    snapshot.getRef().removeValue();
+                                    finish();
+                                }
+                            });
+
 
                         }else{
                             button1.setText("좋아요");
