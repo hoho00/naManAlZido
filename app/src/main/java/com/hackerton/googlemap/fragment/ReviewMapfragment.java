@@ -29,6 +29,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.hackerton.googlemap.PopupActivity;
+import com.hackerton.googlemap.R;
+import com.hackerton.googlemap.model.MapItem;
 import com.hackerton.googlemap.GpsTracker;
 import com.hackerton.googlemap.R;
 import com.hackerton.googlemap.model.ReviewItem;
@@ -142,6 +145,24 @@ public class ReviewMapfragment extends Fragment implements
         }
     }
 
+
+    GoogleMap.OnMarkerClickListener markerClickListener = new GoogleMap.OnMarkerClickListener() {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            //선택한 타겟위치
+            LatLng location = marker.getPosition();
+
+            Intent intent = new Intent(getActivity(), PopupActivity.class);
+
+            intent.putExtra("latitude",location.latitude);
+            intent.putExtra("longitude",location.longitude);
+
+            startActivity(intent);
+
+            return false;
+        }
+    };
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
 
@@ -179,12 +200,8 @@ public class ReviewMapfragment extends Fragment implements
             }
         });
 
+        googleMap.setOnMarkerClickListener(markerClickListener);
         mCurrentLocation(googleMap);
-        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-            }
-        });
 
     }
 
@@ -192,6 +209,7 @@ public class ReviewMapfragment extends Fragment implements
         GpsTracker gpsTracker = new GpsTracker(getContext());
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude()), 14));
+
 
     }
 
