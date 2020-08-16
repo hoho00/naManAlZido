@@ -35,7 +35,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
+public class MainActivity extends AppCompatActivity  {
 
     private DrawerLayout mDrawerLayout;
     private Context context = this;
@@ -62,9 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Toast toast;
 
     //floating button
-    private FloatingActionButton fab, fab1, fab2;
-    private Animation fab_open, fab_close;
-    private Boolean isFabOpen = false;
+    private FloatingActionButton fab;
 
     public void onCreate(Bundle savedInstanceState) {
 
@@ -113,30 +111,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // 플롯팅 액션 버튼
         fab  = (FloatingActionButton) findViewById(R.id.fab);
-        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
-        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
-
-        fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
-        fab_close = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
-
-        fab.setOnClickListener(this);
-
-        fab1.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 add_review(view);
             }
         });
-
-        fab2.setOnClickListener(this);
-/*
-        fab2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                add_review_existing(view);
-            }
-        });
-*/
 
         //startActivity(intent);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -196,26 +176,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        switch (id) {
-            case R.id.fab:
-                anim();
-                //Toast.makeText(this, "Floating Action Button", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.fab1:
-                anim();
-                //Toast.makeText(this, "Button1", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.fab2:
-                anim();
-                //Toast.makeText(this, "Button2", Toast.LENGTH_SHORT).show();
-                break;
-        }
-
-
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -251,28 +211,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void add_review(View view) {
-        startActivity(new Intent(MainActivity.this, AddReview.class));
+        startActivity(new Intent(MainActivity.this, AddArticle.class));
     }
 
-    public void add_review_existing(View view) {
-        startActivity(new Intent(MainActivity.this, AddReviewExisting.class));
-    }
-
-    public void anim() {
-
-        if (isFabOpen) {
-            fab1.startAnimation(fab_close);
-            fab2.startAnimation(fab_close);
-            fab1.setClickable(false);
-            fab2.setClickable(false);
-            isFabOpen = false;
-        } else {
-            fab1.startAnimation(fab_open);
-            fab2.startAnimation(fab_open);
-            fab1.setClickable(true);
-            fab2.setClickable(true);
-            isFabOpen = true;
-        }
-    }
 
 }

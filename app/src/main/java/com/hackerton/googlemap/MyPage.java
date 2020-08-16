@@ -47,7 +47,6 @@ public class MyPage extends AppCompatActivity {
 
 //        Toast.makeText(this, userItem.getId(), Toast.LENGTH_SHORT).show();
 
-        nameTextView.setText(user.getDisplayName()) ;   // 유저 닉네임 표시
         emailTextView.setText(user.getEmail());        // 파이어베이스 이메일 불러오기
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -56,6 +55,7 @@ public class MyPage extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // 유저 주소1, 주소2, 점수 표시
+                String name = snapshot.child("nickName").getValue(String.class);
                 String add1 = snapshot.child("address1").getValue(String.class);
                 String add2 = snapshot.child("address2").getValue(String.class);
                 int score = snapshot.child("score").getValue(int.class);
@@ -63,6 +63,8 @@ public class MyPage extends AppCompatActivity {
                 add1TextView.setText(add1);
                 add2TextView.setText(add2);
                 scoreTextView.setText(String.valueOf(score));
+                nameTextView.setText(name) ;   // 유저 닉네임 표시
+
             }
 
             @Override
