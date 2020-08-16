@@ -11,6 +11,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -136,11 +137,23 @@ public class MainActivity extends AppCompatActivity  {
         header_nameTextView = (TextView) view.findViewById(R.id.header_name_textView);
         header_emailTextView = (TextView) view.findViewById(R.id.header_email_textView);
 
-        header_nameTextView.setText(user.getDisplayName());   // 파이어베이스 이름 불러오기
         header_emailTextView.setText(user.getEmail());        // 파이어베이스 이메일 불러오기
 
+        String uid = user.getUid();
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference reference = database.getReference("Users");
+        reference.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String name = snapshot.child("nickName").getValue(String.class);
+                header_nameTextView.setText(name);
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -154,7 +167,6 @@ public class MainActivity extends AppCompatActivity  {
                 if (id == R.id.account) {
                     Toast.makeText(context, title + ": 계정 정보를 확인합니다.", Toast.LENGTH_SHORT).show();
                     if(auth != null){
-                        Toast.makeText(context, " 정보 확인 ", Toast.LENGTH_SHORT).show();
 
                         Intent intent1 = new Intent(MainActivity.this, MyPage.class);
                         startActivity(intent1);
