@@ -6,6 +6,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,13 +20,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.hackerton.googlemap.model.ReviewItem;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class PopupActivity extends Activity {
 
@@ -58,14 +62,14 @@ public class PopupActivity extends Activity {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        String uid = user.getUid();
-
         FirebaseDatabase.getInstance().getReference("reviews").addValueEventListener(new ValueEventListener() {
             final MarkerOptions markerOptions = new MarkerOptions();
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+
                     //위치가 같으면
                     if(equal(latitude,snapshot.getValue(ReviewItem.class).getLatitude())
                         && equal(longitude, snapshot.getValue(ReviewItem.class).getLongitude())){
@@ -79,7 +83,12 @@ public class PopupActivity extends Activity {
                         String review = snapshot.getValue(ReviewItem.class).getReview();
                         Review.setText(review);
 
-                        String uid = snapshot.child("uid").getValue(String.class);
+                        final String content = snapshot.child("review").getValue(String.class);
+                        final String uid = snapshot.child("uid").getValue(String.class);
+                        final String photoUrl = snapshot.child("photoUrl").getValue(String.class);
+                        final String time = snapshot.child("time").getValue(String.class);
+                        final int score = snapshot.child("score").getValue(int.class);
+
                         if(uid.equals(user.getUid())) {
                             button1.setText("수정");
                             button2.setText("삭제");
@@ -87,6 +96,43 @@ public class PopupActivity extends Activity {
                         }else{
                             button1.setText("좋아요");
                             button2.setText("싫어요");
+
+                            button1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    DatabaseReference mDBReference = null;
+                                    HashMap<String, Object> childUpdates = null;
+
+                                    mDBReference = FirebaseDatabase.getInstance().getReference("reviews");
+                                    childUpdates = new HashMap<>();
+                                    ReviewItem reviewItem = null;
+                                    Map<String, Object> reviewValue =null;
+                                    reviewItem = new ReviewItem(uid, content, photoUrl, time, score+1);
+                                    reviewValue = reviewItem.toMap();
+
+                                    childUpdates.put(uid,reviewValue);
+                                    mDBReference.updateChildren(childUpdates);
+
+                                }
+                            });
+                            button2.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    DatabaseReference mDBReference = null;
+                                    HashMap<String, Object> childUpdates = null;
+
+                                    mDBReference = FirebaseDatabase.getInstance().getReference("reviews");
+                                    childUpdates = new HashMap<>();
+                                    ReviewItem reviewItem = null;
+                                    Map<String, Object> reviewValue =null;
+                                    reviewItem = new ReviewItem(uid, content, photoUrl, time, score-1);
+                                    reviewValue = reviewItem.toMap();
+
+                                    childUpdates.put(uid,reviewValue);
+                                    mDBReference.updateChildren(childUpdates);
+                                }
+                            });
+
                         }
 
                     }
