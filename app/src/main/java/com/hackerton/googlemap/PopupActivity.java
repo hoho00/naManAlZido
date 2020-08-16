@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,6 +33,7 @@ public class PopupActivity extends Activity {
     ImageView imageView;
     Button button1, button2;
     private FirebaseUser user;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +41,6 @@ public class PopupActivity extends Activity {
         //타이틀바 없애기
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_popup);
-
-
 
         imageView = findViewById(R.id.imageView1);
         addressText = findViewById(R.id.addressText1);
@@ -54,6 +54,11 @@ public class PopupActivity extends Activity {
         final double latitude = intent.getExtras().getDouble("latitude");
         final double longitude = intent.getExtras().getDouble("longitude");
 
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
+        String uid = user.getUid();
 
         FirebaseDatabase.getInstance().getReference("reviews").addValueEventListener(new ValueEventListener() {
             final MarkerOptions markerOptions = new MarkerOptions();
@@ -78,6 +83,7 @@ public class PopupActivity extends Activity {
                         if(uid.equals(user.getUid())) {
                             button1.setText("수정");
                             button2.setText("삭제");
+
                         }else{
                             button1.setText("좋아요");
                             button2.setText("싫어요");
@@ -86,6 +92,7 @@ public class PopupActivity extends Activity {
                     }
                 }
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
