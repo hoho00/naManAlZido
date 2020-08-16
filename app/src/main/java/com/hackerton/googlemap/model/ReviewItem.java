@@ -35,6 +35,17 @@ public class ReviewItem {
         return result;
     }
 
+    public Map<String, Object> remove() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("uid", null);
+        result.put("review", null);
+        result.put("photoUrl", null);
+        result.put("time", null);
+        result.put("Score", null);
+
+        return result;
+    }
+
     public String getReview() {
         return review;
     }
