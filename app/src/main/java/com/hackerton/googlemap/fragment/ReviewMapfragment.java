@@ -1,13 +1,20 @@
 package com.hackerton.googlemap.fragment;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +27,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -33,6 +41,7 @@ import com.hackerton.googlemap.R;
 import com.hackerton.googlemap.model.MapItem;
 import com.hackerton.googlemap.GpsTracker;
 import com.hackerton.googlemap.R;
+import com.hackerton.googlemap.model.MarkerItem;
 import com.hackerton.googlemap.model.ReviewItem;
 
 public class ReviewMapfragment extends Fragment implements
@@ -41,6 +50,7 @@ public class ReviewMapfragment extends Fragment implements
     GoogleMap MyMap;
     private MapView mapView;
     public static final int REQUEST_CODE_PERMISSIONS = 1000; // 위치정보에 권한을 요구하는 코드
+
 
     public ReviewMapfragment() {
 
