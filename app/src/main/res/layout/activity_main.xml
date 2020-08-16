@@ -31,9 +31,9 @@
         </androidx.appcompat.widget.Toolbar>
 
         <androidx.viewpager.widget.ViewPager
+            android:id="@+id/main_viewpager"
             android:layout_width="match_parent"
-            android:layout_height="465dp"
-            android:id="@+id/main_viewpager"/>
+            android:layout_height="500dp"/>
         <com.google.android.material.tabs.TabLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,11 +41,38 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="bottom|right">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="160dp"
+            android:layout_marginRight="15sp"
+            android:src="@drawable/ic_add_foreground"
+            android:visibility="invisible"
+            app:backgroundTint="#ffffff"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="90dp"
+            android:layout_marginRight="15sp"
+            android:src="@drawable/ic_add_foreground"
+            android:visibility="invisible"
+            app:backgroundTint="#ffffff"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
@@ -57,7 +84,7 @@
             android:src="@drawable/ic_add_foreground"
             android:onClick="add_review"/>
 
-    </LinearLayout>
+    </FrameLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"

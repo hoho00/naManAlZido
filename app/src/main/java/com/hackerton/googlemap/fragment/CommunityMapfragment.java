@@ -35,17 +35,13 @@ import java.util.ArrayList;
 public class CommunityMapfragment extends Fragment implements OnMapReadyCallback {
     GoogleMap MyMap;
     private MapView mapView = null;
-
     private ArrayList<MapItem> MarkerList;
-
     public CommunityMapfragment(){
 
     }
 
     public static CommunityMapfragment newInstance() {
-
         Bundle args = new Bundle();
-
         CommunityMapfragment fragment = new CommunityMapfragment();
         fragment.setArguments(args);
 

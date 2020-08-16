@@ -1,7 +1,10 @@
 package com.hackerton.googlemap.model;
 
+import android.net.Uri;
+
 public class UserItem {
     private String id;
+    private String uid;
     private String nickName;
     private String photoUrl;
     private String address1;
@@ -10,8 +13,9 @@ public class UserItem {
 
     public UserItem(){}
 
-    public UserItem(String id, String nickName, String photoUrl, String address1, String address2, int score) {
+    public UserItem(String id, String uid,  String nickName, String photoUrl, String address1, String address2, int score) {
         this.id = id;
+        this.uid = uid;
         this.nickName = nickName;
         this.photoUrl = photoUrl;
         this.address1 = address1;
@@ -65,5 +69,13 @@ public class UserItem {
 
     public void setScore(int score) {
         Score = score;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -21,13 +22,17 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.hackerton.googlemap.Adapter.GridViewAdapter;
 import com.hackerton.googlemap.model.GridViewItem;
+import com.hackerton.googlemap.model.ReviewItem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,14 +83,8 @@ public class Content_Activity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_activity);
-        Intent intent = new Intent(this.getIntent());
-        String sendingString = intent.getStringExtra("recent_review");
-        if(sendingString != null) {
-            Toast.makeText(this, sendingString + " content activity success!!", Toast.LENGTH_SHORT).show();
-        }
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         if (mFirebaseUser == null) {
@@ -94,30 +93,32 @@ public class Content_Activity extends AppCompatActivity {
             finish();
             return;
         } else {
-            mUsername = mFirebaseUser.getDisplayName();
-            if (mFirebaseUser.getPhotoUrl() != null) {
-                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
-            }
+            FirebaseDatabase.getInstance().getReference("Users").child(mFirebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        if(snapshot.getKey().equals("nickName")) {
+                            mUsername = snapshot.getValue(String.class);
+                        }
+                        if(snapshot.getKey().equals("photoUrl")) {
+                            mPhotoUrl = snapshot.getValue(String.class);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+            //mUsername = mFirebaseUser.getDisplayName();
+//            if (mFirebaseUser.getPhotoUrl() != null) {
+//                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+//            }
         }
 
         mReviewRecyclerView = findViewById(R.id.message_recycler_view);
-
         // Firebase 리얼타임 데이터 베이스 초기화
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        if(sendingString != null) {
-            ReviewItem reviewItem = new ReviewItem(sendingString,
-                    mUsername,
-                    mPhotoUrl,
-                    null,
-                    null,
-                    50);
-            mFirebaseDatabaseReference.child("reviews")
-                    .push()
-                    .setValue(reviewItem);
-
-            Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
-        }
-
         Query query = mFirebaseDatabaseReference.child(MESSAGES_CHILD);
 
         FirebaseRecyclerOptions<ReviewItem> options =
@@ -125,12 +126,11 @@ public class Content_Activity extends AppCompatActivity {
                         .setQuery(query, ReviewItem.class)
                         .build();
 
-
         mFirebaseAdapter = new FirebaseRecyclerAdapter<ReviewItem, ReviewViewHolder>(options) {
             @Override
             protected void onBindViewHolder(ReviewViewHolder holder, int position, ReviewItem model) {
                 holder.messageTextView.setText(model.getReview());
-                holder.messengerTextView.setText(model.getName());
+                holder.messengerTextView.setText(mFirebaseUser.getEmail());
                 if (model.getPhotoUrl() == null) {
                     holder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(Content_Activity.this,
                             R.drawable.ic_account_circle_black_24dp));
