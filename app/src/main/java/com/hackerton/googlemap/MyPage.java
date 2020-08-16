@@ -53,10 +53,10 @@ public class MyPage extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String content = snapshot.child("review").getValue(String.class);
-                    String uid = snapshot.child("uid").getValue(String.class);;
-                    String photoUrl = snapshot.child("photoUrl").getValue(String.class);;
-                    String time = snapshot.child("time").getValue(String.class);;
-                    int score = snapshot.child("score").getValue(int.class);;
+                    String uid = snapshot.child("uid").getValue(String.class);
+                    String photoUrl = snapshot.child("photoUrl").getValue(String.class);
+                    String time = snapshot.child("time").getValue(String.class);
+                    int score = snapshot.child("score").getValue(int.class);
 
                     if(uid.equals(user.getUid())) {
                         reviewItemList.add(new ReviewItem(uid, content, photoUrl, time, score));

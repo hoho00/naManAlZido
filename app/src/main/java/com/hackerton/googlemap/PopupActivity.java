@@ -7,6 +7,7 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -28,6 +30,8 @@ public class PopupActivity extends Activity {
 
     TextView addressText, timeText, Review;
     ImageView imageView;
+    Button button1, button2;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +41,13 @@ public class PopupActivity extends Activity {
         setContentView(R.layout.activity_popup);
 
 
+
         imageView = findViewById(R.id.imageView1);
         addressText = findViewById(R.id.addressText1);
         timeText = findViewById(R.id.timeText1);
         Review = findViewById(R.id.Review);
+        button1 = findViewById(R.id.Button1);
+        button2 = findViewById(R.id.Button2);
 
         Intent intent = getIntent();
 
@@ -66,6 +73,16 @@ public class PopupActivity extends Activity {
 
                         String review = snapshot.getValue(ReviewItem.class).getReview();
                         Review.setText(review);
+
+                        String uid = snapshot.child("uid").getValue(String.class);
+                        if(uid.equals(user.getUid())) {
+                            button1.setText("수정");
+                            button2.setText("삭제");
+                        }else{
+                            button1.setText("좋아요");
+                            button2.setText("싫어요");
+                        }
+
                     }
                 }
             }
