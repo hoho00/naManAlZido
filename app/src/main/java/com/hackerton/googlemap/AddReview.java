@@ -320,6 +320,10 @@ public class AddReview extends AppCompatActivity {
             Toast.makeText(this, "리뷰를 입력해 주세요", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (imgUrl == null) {
+            Toast.makeText(this, "사진을 추가해 주세요", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         storageReference = mStorage.getReference()
                 .child("reviewImages").child("uid/"+mFirebaseUser.getUid());
