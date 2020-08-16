@@ -1,27 +1,20 @@
 package com.hackerton.googlemap.fragment;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TabHost;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.Api;
-import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,13 +29,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.hackerton.googlemap.Content_Activity;
+import com.hackerton.googlemap.GpsTracker;
 import com.hackerton.googlemap.R;
-import com.hackerton.googlemap.model.MapItem;
-
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.concurrent.TimeUnit;
+import com.hackerton.googlemap.model.ReviewItem;
 
 public class ReviewMapfragment extends Fragment implements
         OnMapReadyCallback,
@@ -172,14 +161,14 @@ public class ReviewMapfragment extends Fragment implements
     public void onMapReady(final GoogleMap googleMap) {
         // 구글 맵 객체를 불러온다.
         final MarkerOptions markerOptions = new MarkerOptions();
-        FirebaseDatabase.getInstance().getReference("Map").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("reviews").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    double latitude = snapshot.getValue(MapItem.class).getLatitude();
-                    double longitude = snapshot.getValue(MapItem.class).getLongitude();
+                    double latitude = snapshot.getValue(ReviewItem.class).getLatitude();
+                    double longitude = snapshot.getValue(ReviewItem.class).getLongitude();
                     markerOptions.position(new LatLng(latitude, longitude));
-                    markerOptions.title(snapshot.getValue(MapItem.class).getAddress());
+                    markerOptions.title("가게 입니다.");
                     googleMap.addMarker(markerOptions);
                 }
             }
@@ -194,32 +183,16 @@ public class ReviewMapfragment extends Fragment implements
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(getContext(), Content_Activity.class);
-                startActivity(intent);
             }
         });
 
     }
 
     public void mCurrentLocation(final GoogleMap googleMap) {
+        GpsTracker gpsTracker = new GpsTracker(getContext());
 
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION},REQUEST_CODE_PERMISSIONS);
-            return;
-        }
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude()), 14));
 
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(),
-                new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        LatLng mylocation = new LatLng(location.getLatitude(),location.getLongitude());
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(mylocation));
-                        googleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-                    }
-                });
     }
 
 }
