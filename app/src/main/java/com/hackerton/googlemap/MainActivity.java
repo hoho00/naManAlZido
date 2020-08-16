@@ -6,9 +6,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -33,11 +36,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
     private DrawerLayout mDrawerLayout;
     private Context context = this;
-    private FloatingActionButton fab;
+
     private TextView header_nameTextView;
     private TextView header_emailTextView;
 
@@ -59,14 +62,17 @@ public class MainActivity extends AppCompatActivity {
     // 첫 번째 뒤로가기 버튼을 누를때 표시
     private Toast toast;
 
+    //floating button
+    private FloatingActionButton fab;
+
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        setContentView(R.layout.activity_main);
         Intent intent = new Intent(this.getIntent());
         String sendingString = intent.getStringExtra("recent_review");
         String formatdate = intent.getStringExtra("recent_date");
@@ -105,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // 플롯팅 액션 버튼
-        FloatingActionButton fab = findViewById(R.id.fab);
+        fab  = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -131,11 +137,23 @@ public class MainActivity extends AppCompatActivity {
         header_nameTextView = (TextView) view.findViewById(R.id.header_name_textView);
         header_emailTextView = (TextView) view.findViewById(R.id.header_email_textView);
 
-        header_nameTextView.setText(user.getDisplayName());   // 파이어베이스 이름 불러오기
         header_emailTextView.setText(user.getEmail());        // 파이어베이스 이메일 불러오기
 
+        String uid = user.getUid();
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference reference = database.getReference("Users");
+        reference.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String name = snapshot.child("nickName").getValue(String.class);
+                header_nameTextView.setText(name);
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -149,7 +167,6 @@ public class MainActivity extends AppCompatActivity {
                 if (id == R.id.account) {
                     Toast.makeText(context, title + ": 계정 정보를 확인합니다.", Toast.LENGTH_SHORT).show();
                     if(auth != null){
-                        Toast.makeText(context, " 정보 확인 ", Toast.LENGTH_SHORT).show();
 
                         Intent intent1 = new Intent(MainActivity.this, MyPage.class);
                         startActivity(intent1);
@@ -170,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -205,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void add_review(View view) {
-        startActivity(new Intent(MainActivity.this, AddReview.class));
+        startActivity(new Intent(MainActivity.this, AddArticle.class));
     }
-
 }
