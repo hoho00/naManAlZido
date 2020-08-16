@@ -38,8 +38,10 @@
         <activity android:name=".AddReview" />
         <activity android:name=".LogInActivity"></activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".Content_Activity" />
         <activity android:name=".RegisterActivity" />
+
+        <!-- 팝업 Activity -->
+        <activity android:name=".PopupActivity" android:theme="@android:style/Theme.Dialog" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

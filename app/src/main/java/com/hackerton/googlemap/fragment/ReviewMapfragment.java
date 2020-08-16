@@ -5,13 +5,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TabHost;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -22,9 +20,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.hackerton.googlemap.Content_Activity;
+import com.hackerton.googlemap.PopupActivity;
 import com.hackerton.googlemap.R;
 import com.hackerton.googlemap.model.MapItem;
+import com.hackerton.googlemap.model.ReviewItem;
 
 public class ReviewMapfragment extends Fragment implements OnMapReadyCallback {
 
@@ -112,18 +111,36 @@ public class ReviewMapfragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+
+    GoogleMap.OnMarkerClickListener markerClickListener = new GoogleMap.OnMarkerClickListener() {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            //선택한 타겟위치
+            LatLng location = marker.getPosition();
+
+            Intent intent = new Intent(getActivity(), PopupActivity.class);
+
+            intent.putExtra("latitude",location.latitude);
+            intent.putExtra("longitude",location.longitude);
+
+            startActivity(intent);
+
+            return false;
+        }
+    };
+
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         // 구글 맵 객체를 불러온다.
         final MarkerOptions markerOptions = new MarkerOptions();
-        FirebaseDatabase.getInstance().getReference("Map").addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("reviews").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    double latitude = snapshot.getValue(MapItem.class).getLatitude();
-                    double longitude = snapshot.getValue(MapItem.class).getLongitude();
+                    double latitude = snapshot.getValue(ReviewItem.class).getLatitude();
+                    double longitude = snapshot.getValue(ReviewItem.class).getLongitude();
                     markerOptions.position(new LatLng(latitude,longitude));
-                    markerOptions.title(snapshot.getValue(MapItem.class).getAddress());
+                    markerOptions.title("df");
                     googleMap.addMarker(markerOptions);
                 }
             }
@@ -134,13 +151,8 @@ public class ReviewMapfragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(getContext(), Content_Activity.class);
-                startActivity(intent);
-            }
-        });
+        googleMap.setOnMarkerClickListener(markerClickListener);
+
     }
 
 }

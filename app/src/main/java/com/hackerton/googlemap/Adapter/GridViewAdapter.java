@@ -5,7 +5,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.hackerton.googlemap.Content_Activity;
 import com.hackerton.googlemap.View.GridItemView;
 import com.hackerton.googlemap.model.GridViewItem;
 
