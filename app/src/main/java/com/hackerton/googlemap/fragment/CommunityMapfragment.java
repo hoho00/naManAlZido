@@ -1,14 +1,12 @@
 package com.hackerton.googlemap.fragment;
 
-import android.content.Intent;
-import android.location.Location;
-import android.location.LocationManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TabHost;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +16,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
+
+import com.google.android.gms.maps.model.LatLng;
+
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -26,17 +27,18 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.hackerton.googlemap.Content_Activity;
+import com.hackerton.googlemap.GpsTracker;
+
 import com.hackerton.googlemap.R;
+import com.hackerton.googlemap.model.ArticleItem;
 import com.hackerton.googlemap.model.MapItem;
+import com.hackerton.googlemap.model.ReviewItem;
 
 import java.util.ArrayList;
 
 public class CommunityMapfragment extends Fragment implements OnMapReadyCallback {
     GoogleMap MyMap;
     private MapView mapView = null;
-
-    private ArrayList<MapItem> MarkerList;
 
     public CommunityMapfragment(){
 
@@ -121,10 +123,42 @@ public class CommunityMapfragment extends Fragment implements OnMapReadyCallback
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
+        final MarkerOptions markerOptions = new MarkerOptions();
+        FirebaseDatabase.getInstance().getReference("Article").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    double latitude = snapshot.getValue(ArticleItem.class).getLatitude();
+                    double longitude = snapshot.getValue(ArticleItem.class).getLongitude();
+                    markerOptions.position(new LatLng(latitude, longitude));
+                    markerOptions.title(snapshot.getValue(ArticleItem.class).getTitle());
+                    markerOptions.snippet(snapshot.getValue(ArticleItem.class).getTitle());
+                    googleMap.addMarker(markerOptions).showInfoWindow();
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(37.52487, 126.92723)));
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+            }
+        });
+        mCurrentLocation(googleMap);
+    }
+
+    public void mCurrentLocation(GoogleMap googleMap){
+        GpsTracker gpsTracker = new GpsTracker(getContext());
+        LatLng location = new LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude());
+
+        MarkerOptions markerOptions = new MarkerOptions();
+
+        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.icon);
+        Bitmap b=bitmapdraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, 100, 100, false);
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+        markerOptions.position(location);
+
+        googleMap.addMarker(markerOptions);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location,14));
 
     }
 }

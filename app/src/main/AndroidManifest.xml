@@ -40,6 +40,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".AddArticle"/>
         <activity android:name=".RegisterActivity" />
+        <activity android:name=".MyPage" />
 
         <!-- 팝업 Activity -->
         <activity android:name=".PopupActivity" android:theme="@android:style/Theme.Dialog" />

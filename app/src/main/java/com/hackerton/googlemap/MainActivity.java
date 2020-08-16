@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Picasso;
 
 
 public class MainActivity extends AppCompatActivity  {
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity  {
 
     private TextView header_nameTextView;
     private TextView header_emailTextView;
+    private ImageView header_photo_imageView;
 
     private TextView nameTextView;
     private TextView emailTextView;
@@ -136,8 +139,9 @@ public class MainActivity extends AppCompatActivity  {
         // 네비게이션바 이름, 이메일 표시
         header_nameTextView = (TextView) view.findViewById(R.id.header_name_textView);
         header_emailTextView = (TextView) view.findViewById(R.id.header_email_textView);
+        header_photo_imageView = (ImageView) view.findViewById(R.id.header_photo_imageView);
 
-        header_emailTextView.setText(user.getEmail());        // 파이어베이스 이메일 불러오기
+        header_emailTextView.setText(user.getEmail());// 파이어베이스 이메일 불러오기
 
         String uid = user.getUid();
 
@@ -147,7 +151,9 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String name = snapshot.child("nickName").getValue(String.class);
+                String profilePhoto = snapshot.child("photoUrl").getValue(String.class);
                 header_nameTextView.setText(name);
+                Picasso.with(MainActivity.this).load(profilePhoto).into(header_photo_imageView);
             }
 
             @Override
@@ -223,6 +229,6 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void add_review(View view) {
-        startActivity(new Intent(MainActivity.this, AddArticle.class));
+        startActivity(new Intent(MainActivity.this, AddReview.class));
     }
 }

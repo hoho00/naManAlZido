@@ -41,7 +41,6 @@ public class AddArticle extends AppCompatActivity {
         Button_Summit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 ArticleItem articleItem = new ArticleItem();
                 articleItem.setReg_time(new Date(System.currentTimeMillis()).toString());
                 articleItem.setTitle(EditText_Title.getText().toString());

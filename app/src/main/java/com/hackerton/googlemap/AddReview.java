@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -32,15 +33,21 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.loader.content.CursorLoader;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.hackerton.googlemap.data.ReviewContract;
 import com.hackerton.googlemap.data.ReviewDbHelper;
 import com.hackerton.googlemap.model.MapItem;
 import com.hackerton.googlemap.model.ReviewItem;
+import com.hackerton.googlemap.model.UserItem;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -97,7 +104,10 @@ public class AddReview extends AppCompatActivity {
     String formatDate = sdfNow.format(date);
     TextView dateNow;
     String curAddress;
-    //
+
+    private FirebaseDatabase mDatabase;
+    private FirebaseStorage mStorage;
+    private StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +115,11 @@ public class AddReview extends AppCompatActivity {
         setContentView(R.layout.activity_add_review);
         // 레이아웃과 변수 연결
         imageView = findViewById(R.id.imageView1);
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        mStorage = FirebaseStorage.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
         // 카메라 버튼에 리스터 추가
         // 6.0 마쉬멜로우 이상일 경우에는 권한 체크 후 권한 요청
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -117,7 +132,7 @@ public class AddReview extends AppCompatActivity {
         }
 
         // 카메라 앱을 여는 소스
-        sendTakePhotoIntent();
+        //sendTakePhotoIntent();
 //        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 //        startActivityForResult(cameraIntent, TAKE_PICTURE);
         //시간
@@ -184,8 +199,6 @@ public class AddReview extends AppCompatActivity {
                 if (resultCode == RESULT_OK && intent.hasExtra("data")) {
                     Bitmap bitmap = (Bitmap) intent.getExtras().get("data");
                     imgUrl = intent.getData();
-                    pathUri = getPath(intent.getData());
-                    Picasso.with(this).load(imgUrl).into(imageView);
                 }
                 break;
         }
@@ -201,20 +214,21 @@ public class AddReview extends AppCompatActivity {
                     }
                 }
                 break;
+
+            case CHOOSE_IMAGE:
+                if(intent != null && intent.getData() != null) {
+                    imgUrl = intent.getData();
+                    pathUri = getPath(intent.getData());
+                    Picasso.with(this).load(imgUrl).into(imageView);
+                }
+                break;
         }
 //        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 //            ((ImageView)findViewById(R.id.imageView1)).setImageURI(photoUri);
 //        }
     }
 
-    public String getPath(Uri uri) {
-        String[] proj = {MediaStore.Images.Media.DATA};
-        CursorLoader cursorLoader = new CursorLoader(this, uri, proj, null, null, null);
-        Cursor cursor = cursorLoader.loadInBackground();
-        int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(index);
-    }
+
 
 
     void checkRunTimePermission() {
@@ -248,7 +262,6 @@ public class AddReview extends AppCompatActivity {
     }
 
     public String getCurrentAddress(double latitude, double longitude) {
-
         //지오코더... GPS를 주소로 변환
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         List<Address> addresses;
@@ -302,28 +315,35 @@ public class AddReview extends AppCompatActivity {
                 || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
     public void certi_camera_submit(View view) {
-        EditText reviewText = findViewById(R.id.editTextTextMultiLine);
+        final EditText reviewText = findViewById(R.id.editTextTextMultiLine);
         if(reviewText.getText().toString().equals("")) {
             Toast.makeText(this, "리뷰를 입력해 주세요", Toast.LENGTH_SHORT).show();
             return;
         }
-        String review = reviewText.getText().toString();
 
-        ReviewItem reviewItem = new ReviewItem();
-        reviewItem.setUid(mFirebaseUser.getUid());
-        reviewItem.setReview(review);
-        reviewItem.setPhotoUrl("photo");
-        reviewItem.setTime("date");
-        reviewItem.setScore(50);
-        reviewItem.setLatitude(latitude);
-        reviewItem.setLongitude(longitude);
+        storageReference = mStorage.getReference()
+                .child("reviewImages").child("uid/"+mFirebaseUser.getUid());
+        storageReference.putFile(imgUrl).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                final Task<Uri> imageUrl = task.getResult().getStorage().getDownloadUrl();
+                while (!imageUrl.isComplete()) ;
+                String review = reviewText.getText().toString();
+                ReviewItem reviewItem = new ReviewItem();
+                reviewItem.setUid(mFirebaseUser.getUid());
+                reviewItem.setReview(review);
+                reviewItem.setPhotoUrl(imageUrl.getResult().toString());
+                reviewItem.setTime(formatDate);
+                reviewItem.setScore(50);
+                reviewItem.setLatitude(latitude);
+                reviewItem.setLongitude(longitude);
+                reviewItem.setPhotoUrl(imageUrl.getResult().toString());
+                mDatabase.getReference().child("reviews").push().setValue(reviewItem);
+            }
+        });
 
-        FirebaseDatabase reviewDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference reviewReference = reviewDatabase.getReference("reviews");
-        reviewReference.push().setValue(reviewItem);
-
-        //Intent intent = new Intent(AddReview.this, MainActivity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(AddReview.this, MainActivity.class);
+        startActivity(intent);
     }
 
     private File createImageFile() throws IOException {
@@ -354,5 +374,24 @@ public class AddReview extends AppCompatActivity {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
+    }
+
+    public String getPath(Uri uri) {
+        String[] proj = {MediaStore.Images.Media.DATA};
+        CursorLoader cursorLoader = new CursorLoader(this, uri, proj, null, null, null);
+        Cursor cursor = cursorLoader.loadInBackground();
+        int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(index);
+    }
+
+    private void showFileChoose() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+        startActivityForResult(intent, CHOOSE_IMAGE);
+    }
+
+    public void set_review_image(View view) {
+        showFileChoose();
     }
 }

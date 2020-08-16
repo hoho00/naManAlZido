@@ -16,7 +16,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_launcher_foreground"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:onClick="set_review_image"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
