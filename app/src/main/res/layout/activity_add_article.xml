@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    tools:context=".AddArticle">
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="230dp"
+        android:layout_height="230dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_launcher_foreground"
+        android:layout_gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="5dp">
+
+        <View
+            android:layout_width="20dp"
+            android:layout_height="0dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:text="현재 시간"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            />
+        <View
+            android:layout_width="20dp"
+            android:layout_height="0dp"/>
+        <TextView
+            android:id="@+id/AddArticle_time"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="address"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            android:ellipsize="end"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView1" />
+
+    </LinearLayout>
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"/>
+    <View
+        android:layout_width="350dp"
+        android:layout_height="0.5dp"
+        android:background="#000000"/>
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="5dp">
+
+        <View
+            android:layout_width="20dp"
+            android:layout_height="0dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="제목"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            />
+        <View
+            android:layout_width="20dp"
+            android:layout_height="0dp"/>
+        <EditText
+            android:id="@+id/AddArticle_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            android:ellipsize="end"
+            android:textSize="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/AddArticle_time" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="10dp"/>
+
+    <View
+        android:layout_width="350dp"
+        android:layout_height="0.5dp"
+        android:background="#000000"/>
+    <View
+        android:layout_width="0dp"
+        android:layout_height="10dp"/>
+    <EditText
+        android:id="@+id/AddArticle_content"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:hint="간단한 내용을 작성해주세요."
+        android:textSize="12sp"
+        android:inputType="textMultiLine"
+        android:padding="5dip"
+        android:background="@drawable/rounded_edittext" />
+
+    <Button
+        android:id="@+id/AddArticle_SummitBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background = "@drawable/registerbutton"
+        android:padding = "0dp"
+        android:onClick="certi_camera_submit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timeText1"/>
+
+</LinearLayout>

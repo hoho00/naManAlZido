@@ -211,7 +211,6 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void add_review(View view) {
-        startActivity(new Intent(MainActivity.this, AddReview.class));
+        startActivity(new Intent(MainActivity.this, AddArticle.class));
     }
-
 }
