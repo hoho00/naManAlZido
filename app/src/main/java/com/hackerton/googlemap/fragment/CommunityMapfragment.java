@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,12 +43,16 @@ import com.hackerton.googlemap.model.MarkerItem;
 import com.hackerton.googlemap.model.ReviewItem;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class CommunityMapfragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView = null;
 
     private View marker_root_view;
     private TextView MarkerTitle;
+    private TextView MarkerTime;
+    private Date Current;
+
 
     public CommunityMapfragment(){
 
@@ -74,6 +79,7 @@ public class CommunityMapfragment extends Fragment implements OnMapReadyCallback
         View layout = inflater.inflate(R.layout.fragment_community_map,container,false);
         mapView = (MapView) layout.findViewById(R.id.community_map);
         mapView.getMapAsync(this);
+        Current = new Date();
 
         return layout;
     }
@@ -133,19 +139,27 @@ public class CommunityMapfragment extends Fragment implements OnMapReadyCallback
     public void setCustomMarkerView(){
         marker_root_view = LayoutInflater.from(getContext()).inflate(R.layout.marker_layout, null);
         MarkerTitle = (TextView) marker_root_view.findViewById(R.id.MarkerLayout_Title);
+        MarkerTime = (TextView) marker_root_view.findViewById(R.id.MarkerLayout_Time);
     }
 
-    private Marker addMarker(GoogleMap googleMap, MarkerItem markerItem) {
+    private Marker addMarker(GoogleMap googleMap, ArticleItem markerItem) {
 
 
         LatLng position = new LatLng(markerItem.getLatitude(), markerItem.getLongitude());
-        String title = markerItem.getTitle();
+        Date date = new Date(markerItem.getReg_time());
 
+        int gap = Current.getHours() - date.getHours();
+        if(gap < 0)
+            gap = 24 + gap;
+        String time = gap + "시간 전";
+        String title = markerItem.getTitle();
 
         MarkerTitle.setText(title);
         MarkerTitle.setTextSize(10);
-        MarkerTitle.setBackgroundResource(R.drawable.markericon);
         MarkerTitle.setTextColor(Color.WHITE);
+        MarkerTime.setText(time);
+        MarkerTime.setTextSize(8);
+        MarkerTime.setTextColor(Color.WHITE);
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.title(markerItem.getContent());
@@ -181,13 +195,18 @@ public class CommunityMapfragment extends Fragment implements OnMapReadyCallback
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-                    MarkerItem markerItem = new MarkerItem();
+                    ArticleItem markerItem = new ArticleItem();
                     markerItem.setLatitude(snapshot.getValue(ArticleItem.class).getLatitude());
                     markerItem.setLongitude(snapshot.getValue(ArticleItem.class).getLongitude());
                     markerItem.setTitle(snapshot.getValue(ArticleItem.class).getTitle());
                     markerItem.setContent(snapshot.getValue(ArticleItem.class).getContent());
+                    markerItem.setReg_time(snapshot.getValue(ArticleItem.class).getReg_time());
 
-                    addMarker(googleMap, markerItem);
+                    Date date = new Date(markerItem.getReg_time());
+
+                    if(Current.getTime() - date.getTime() < 86400000) {
+                        addMarker(googleMap, markerItem);
+                    }
                 }
             }
 
