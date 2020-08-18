@@ -35,7 +35,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.hackerton.googlemap.model.ReviewItem;
 import com.squareup.picasso.Picasso;
+
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity  {
@@ -68,10 +71,13 @@ public class MainActivity extends AppCompatActivity  {
     //floating button
     private FloatingActionButton fab;
 
+    private int personScore;
+
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        personScore = 0;
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -145,8 +151,8 @@ public class MainActivity extends AppCompatActivity  {
 
         String uid = user.getUid();
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference("Users");
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference reference = database.getReference("Users");
         reference.child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -231,4 +237,6 @@ public class MainActivity extends AppCompatActivity  {
     public void add_review(View view) {
         startActivity(new Intent(MainActivity.this, AddReview.class));
     }
+
+
 }

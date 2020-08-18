@@ -56,7 +56,7 @@ public class MyPage extends AppCompatActivity {
                     String uid = snapshot.child("uid").getValue(String.class);
                     String photoUrl = snapshot.child("photoUrl").getValue(String.class);
                     String time = snapshot.child("time").getValue(String.class);
-                    int score = snapshot.child("score").getValue(int.class);
+                    int score = snapshot.getValue(ReviewItem.class).getScore();
 
                     if(uid.equals(user.getUid())) {
                         reviewItemList.add(new ReviewItem(uid, content, photoUrl, time, score));

@@ -37,8 +37,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -62,6 +65,7 @@ public class AddReview extends AppCompatActivity {
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
+    private String uid;
 
     // 사용자 이름과 사진
     private String mUsername;
@@ -108,6 +112,7 @@ public class AddReview extends AppCompatActivity {
     private FirebaseDatabase mDatabase;
     private FirebaseStorage mStorage;
     private StorageReference storageReference;
+    private int currentScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +125,7 @@ public class AddReview extends AppCompatActivity {
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mStorage = FirebaseStorage.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
+        uid = mFirebaseUser.getUid();
         // 카메라 버튼에 리스터 추가
         // 6.0 마쉬멜로우 이상일 경우에는 권한 체크 후 권한 요청
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -152,7 +158,24 @@ public class AddReview extends AppCompatActivity {
         String address = getCurrentAddress(latitude, longitude);
         curAddress = address;
         textview_address.setText(address + latitude + longitude);
-        //
+
+        mDatabase.getReference().child("Users").child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserItem userItem = dataSnapshot.getValue(UserItem.class);
+                if(userItem != null) {
+                    currentScore = userItem.getScore();
+                }
+
+                Log.d("AddReview", "score: " + currentScore);
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
     // 권한 요청
     @Override
@@ -325,6 +348,8 @@ public class AddReview extends AppCompatActivity {
             return;
         }
 
+
+
         storageReference = mStorage.getReference()
                 .child("reviewImages").child("uid/"+mFirebaseUser.getUid());
         storageReference.putFile(imgUrl).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -338,12 +363,15 @@ public class AddReview extends AppCompatActivity {
                 reviewItem.setReview(review);
                 reviewItem.setPhotoUrl(imageUrl.getResult().toString());
                 reviewItem.setTime(formatDate);
+                Log.d("AddReview", "score: " + currentScore);
                 reviewItem.setScore(50);
                 reviewItem.setLatitude(latitude);
                 reviewItem.setLongitude(longitude);
                 reviewItem.setPhotoUrl(imageUrl.getResult().toString());
                 mDatabase.getReference().child("reviews").push().setValue(reviewItem);
+                mDatabase.getReference().child("Users").child(uid).child("score").setValue(currentScore + 50);
             }
+
         });
 
         Intent intent = new Intent(AddReview.this, MainActivity.class);
