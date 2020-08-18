@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.hackerton.googlemap.model.ReviewItem;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -83,6 +84,9 @@ public class PopupActivity extends Activity {
 
                         String review = snapshot.getValue(ReviewItem.class).getReview();
                         Review.setText(review);
+
+                        String photo = snapshot.getValue(ReviewItem.class).getPhotoUrl();
+                        Picasso.with(PopupActivity.this).load(photo).into(imageView);
 
                         final String content = snapshot.child("review").getValue(String.class);
                         final String uid = snapshot.child("uid").getValue(String.class);
