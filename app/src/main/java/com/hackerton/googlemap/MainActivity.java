@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity  {
     private FirebaseAuth auth;
     private FirebaseUser user;
 
+    private int mTabPosition;
+
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     CommunityMapfragment mapFragment;
@@ -71,13 +73,11 @@ public class MainActivity extends AppCompatActivity  {
     //floating button
     private FloatingActionButton fab;
 
-    private int personScore;
 
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        personScore = 0;
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
+                mTabPosition = tab.getPosition();
             }
 
             @Override
@@ -235,8 +236,17 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void add_review(View view) {
-        startActivity(new Intent(MainActivity.this, AddReview.class));
+
+        switch (mTabPosition){
+            case 0:
+                startActivity(new Intent(MainActivity.this, AddReview.class));
+                break;
+            case 1:
+                startActivity(new Intent(MainActivity.this, AddArticle.class));
+                break;
+            default:
+                break;
+
+        }
     }
-
-
 }

@@ -2,6 +2,8 @@ package com.hackerton.googlemap.model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ReviewItem {
     private String uid;
@@ -20,6 +22,28 @@ public class ReviewItem {
         this.photoUrl = photoUrl;
         this.time = time;
         Score = score;
+    }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("uid", uid);
+        result.put("review",review);
+        result.put("photoUrl", photoUrl);
+        result.put("time", time);
+        result.put("Score", Score);
+
+        return result;
+    }
+
+    public Map<String, Object> remove() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("uid", null);
+        result.put("review", null);
+        result.put("photoUrl", null);
+        result.put("time", null);
+        result.put("Score", null);
+
+        return result;
     }
 
     public String getReview() {
