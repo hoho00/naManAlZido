@@ -2,6 +2,10 @@ package com.hackerton.googlemap;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -17,6 +21,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
@@ -36,9 +41,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.hackerton.googlemap.model.ReviewItem;
+import com.hackerton.googlemap.model.UserItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity  {
@@ -48,7 +56,8 @@ public class MainActivity extends AppCompatActivity  {
 
     private TextView header_nameTextView;
     private TextView header_emailTextView;
-    private ImageView header_photo_imageView;
+    private TextView header_levelTextView;
+    private CircleImageView header_photo_imageView;
 
     private TextView nameTextView;
     private TextView emailTextView;
@@ -82,13 +91,10 @@ public class MainActivity extends AppCompatActivity  {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        Intent intent = new Intent(this.getIntent());
-        String sendingString = intent.getStringExtra("recent_review");
-        String formatdate = intent.getStringExtra("recent_date");
 
         mTabLayout = (TabLayout) findViewById(R.id.main_tablayout);
-        mTabLayout.addTab(mTabLayout.newTab().setText("Tab One"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("Tab Two"));
+        mTabLayout.addTab(mTabLayout.newTab().setIcon(R.drawable.review_map_icon));
+        mTabLayout.addTab(mTabLayout.newTab().setIcon(R.drawable.community_map_icon));
         mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 
@@ -100,18 +106,26 @@ public class MainActivity extends AppCompatActivity  {
         mViewPager.setAdapter(pagerAdapter);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
 
+        TabLayout.Tab tab =  mTabLayout.getTabAt(0);
+        int icon_color = ContextCompat.getColor(context,R.color.colorMain);
+        tab.getIcon().setColorFilter(icon_color, PorterDuff.Mode.SRC_IN);
+
         // Set TabSelectedListener
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
+                int icon_color = ContextCompat.getColor(context,R.color.colorMain);
+                tab.getIcon().setColorFilter(icon_color, PorterDuff.Mode.SRC_IN);
                 mTabPosition = tab.getPosition();
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
 
+                int icon_color = ContextCompat.getColor(context, R.color.black);
+                tab.getIcon().setColorFilter(icon_color, PorterDuff.Mode.SRC_IN);
             }
 
             @Override
@@ -135,21 +149,18 @@ public class MainActivity extends AppCompatActivity  {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true); // 햄버거 버튼 만들기
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_foreground); //햄버거 버튼 이미지 지정
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         DatabaseReference db = FirebaseDatabase.getInstance().getReference("Users");
-
         NavigationView navigationView = findViewById(R.id.nav_view);
         View view = navigationView.getHeaderView(0);
 
         // 네비게이션바 이름, 이메일 표시
         header_nameTextView = (TextView) view.findViewById(R.id.header_name_textView);
         header_emailTextView = (TextView) view.findViewById(R.id.header_email_textView);
-        header_photo_imageView = (ImageView) view.findViewById(R.id.header_photo_imageView);
+        header_levelTextView = (TextView) view.findViewById(R.id.header_level_textView);
+        header_photo_imageView = (CircleImageView) view.findViewById(R.id.header_photo_imageView);
 
         header_emailTextView.setText(user.getEmail());// 파이어베이스 이메일 불러오기
-
         String uid = user.getUid();
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -157,9 +168,18 @@ public class MainActivity extends AppCompatActivity  {
         reference.child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                 String name = snapshot.child("nickName").getValue(String.class);
                 String profilePhoto = snapshot.child("photoUrl").getValue(String.class);
+                int score = snapshot.child("score").getValue(int.class);
+                //String name = snapshot.getValue(UserItem.class).getNickName();
+                //String profilePhoto = snapshot.getValue(UserItem.class).getPhotoUrl();
+                //int score = snapshot.getValue(UserItem.class).getScore();
                 header_nameTextView.setText(name);
+                //String level = "당신의 신뢰도 점수는" + score;
+                header_levelTextView.setText("당신의 온정포인트는 "+score+"점");
+
+
                 Picasso.with(MainActivity.this).load(profilePhoto).into(header_photo_imageView);
             }
 
@@ -180,19 +200,20 @@ public class MainActivity extends AppCompatActivity  {
                 if (id == R.id.account) {
                     Toast.makeText(context, title + ": 계정 정보를 확인합니다.", Toast.LENGTH_SHORT).show();
                     if(auth != null){
-
                         Intent intent1 = new Intent(MainActivity.this, MyPage.class);
                         startActivity(intent1);
-
                     }
-                } else if (id == R.id.setting) {
-                    Toast.makeText(context, title + ": 설정 정보를 확인합니다.", Toast.LENGTH_SHORT).show();
+                } else if (id == R.id.developer) {
+                    Toast.makeText(context, title + ": 만든 사람들", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.logout) {
                     Toast.makeText(context, title + ": 로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
                     auth.signOut();
                     finish();
                     Intent intent3 = new Intent(MainActivity.this, LogInActivity.class);
                     startActivity(intent3);
+                }
+                else if (id == R.id.survay) {
+                    Toast.makeText(context, title + ": 설문조사", Toast.LENGTH_SHORT).show();
                 }
 
                 return true;

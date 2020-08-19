@@ -7,17 +7,24 @@
             style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
             android:title="계정"
             />
-        <item
-            android:id="@+id/setting"
-            android:icon="@drawable/ic_settings_foreground"
-            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-            android:title="설정"
-            />
+
         <item
             android:id="@+id/logout"
             android:icon="@drawable/ic_launcher_foreground"
             style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
             android:title="로그아웃"
+            />
+        <item
+            android:id="@+id/developer"
+            android:icon="@drawable/ic_settings_foreground"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:title="만든 사람들"
+            />
+        <item
+            android:id="@+id/survay"
+            android:icon="@drawable/ic_settings_foreground"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:title="설문하러가기!!"
             />
     </group>
 </menu>

@@ -46,7 +46,6 @@
             android:textStyle="bold"
             android:gravity="center_vertical"
             android:ellipsize="end"
-
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView1" />
 
@@ -81,15 +80,17 @@
         <View
             android:layout_width="20dp"
             android:layout_height="0dp"/>
+
         <EditText
             android:id="@+id/AddArticle_title"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textStyle="bold"
-            android:gravity="center_vertical"
             android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:hint="제목을 입력해 주세요"
             android:textSize="15dp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/AddArticle_time" />
 
@@ -125,7 +126,6 @@
         android:layout_gravity="center"
         android:background = "@drawable/registerbutton"
         android:padding = "0dp"
-        android:onClick="certi_camera_submit"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/timeText1"/>
 
