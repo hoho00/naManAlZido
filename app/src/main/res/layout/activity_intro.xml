@@ -13,20 +13,10 @@
         android:orientation="vertical">
 
         <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:src="@drawable/logo" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="나만 알 지도"
-            android:textColor="#000000"
-            android:textSize="50sp"
-            android:layout_marginTop="20dp"
-            android:fontFamily="@font/maplestory_bold"/>
+            android:src="@drawable/whiteback" />
 
     </LinearLayout>
 

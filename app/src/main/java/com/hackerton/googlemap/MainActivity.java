@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity  {
                     Intent intent3 = new Intent(MainActivity.this, LogInActivity.class);
                     startActivity(intent3);
                 }
-                else if (id == R.id.survay) {
+                else if (id == R.id.survey) {
                     Toast.makeText(context, title + ": 설문조사", Toast.LENGTH_SHORT).show();
                 }
 
