@@ -51,7 +51,11 @@ public class RegisterActivity extends AppCompatActivity {
     private Uri imgUrl;
     private ImageView imgPreview;
     private String pathUri;
+    private String registerPhoto;
     private StorageReference storageReference;
+    private UserItem userItem;
+    private boolean uploading = true;
+
 
 
     private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
@@ -88,6 +92,8 @@ public class RegisterActivity extends AppCompatActivity {
                 showFileChoose();
             }
         });
+
+        userItem = new UserItem();
     }
 
     private void showFileChoose() {
@@ -112,6 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         //가입 성공시
                         if (task.isSuccessful()) {
+                            Toast.makeText(RegisterActivity.this, "회원 정보를 등록하는 중 입니다. 잠시만 기다려 주세요", Toast.LENGTH_LONG).show();
                             FirebaseUser user = firebaseAuth.getCurrentUser();
                             final String email = user.getEmail();
                             final String uid = user.getUid();
@@ -127,24 +134,34 @@ public class RegisterActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                     final Task<Uri> imageUrl = task.getResult().getStorage().getDownloadUrl();
-                                    while (!imageUrl.isComplete()) ;
-                                    UserItem userItem = new UserItem();
-                                    userItem.setId(email);
-                                    userItem.setNickName(name);
-                                    userItem.setAddress1(address1);
-                                    userItem.setAddress2(address2);
-                                    userItem.setScore(0);
-                                    userItem.setPhotoUrl(imageUrl.getResult().toString());
-                                    // database에 저장
-                                    mDatabase.getReference().child("Users").child(uid)
-                                            .setValue(userItem);
+                                    while (!imageUrl.isComplete()) {
+                                        uploading = true;
+                                    }
+                                    registerPhoto = imageUrl.getResult().toString();
+                                    Log.d("RegisterActivity", "load: " + registerPhoto);
+                                    userItem.setPhotoUrl(registerPhoto);
+                                    uploading = false;
+                                    if(!uploading) {
+                                        userItem.setId(email);
+                                        userItem.setNickName(name);
+                                        userItem.setAddress1(address1);
+                                        userItem.setAddress2(address2);
+                                        userItem.setScore(0);
+                                        Log.d("RegisterActivity", "set user: " + registerPhoto);
+                                        // database에 저장
+                                        mDatabase.getReference("Users").child(uid)
+                                                .setValue(userItem);
+                                        //가입이 이루어져을시 가입 화면을 빠져나감.
+                                        Intent intent = new Intent(RegisterActivity.this, LogInActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                        Toast.makeText(RegisterActivity.this, "회원가입에 성공하셨습니다.", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             });
-                            //가입이 이루어져을시 가입 화면을 빠져나감.
-                            Intent intent = new Intent(RegisterActivity.this, LogInActivity.class);
-                            startActivity(intent);
-                            finish();
-                            Toast.makeText(RegisterActivity.this, "회원가입에 성공하셨습니다.", Toast.LENGTH_SHORT).show();
+
+
+
 
                         } else {
                             Toast.makeText(RegisterActivity.this, "이미 존재하는 아이디 입니다.", Toast.LENGTH_SHORT).show();
