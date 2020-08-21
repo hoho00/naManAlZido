@@ -152,7 +152,7 @@ public class ReviewMapfragment extends Fragment implements
 
             startActivity(intent);
 
-            return false;
+            return true;
         }
     };
 
@@ -176,7 +176,6 @@ public class ReviewMapfragment extends Fragment implements
                         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
                     markerOptions.position(new LatLng(latitude, longitude));
-                    markerOptions.title("가게 입니다.");
                     googleMap.addMarker(markerOptions);
                 }
             }

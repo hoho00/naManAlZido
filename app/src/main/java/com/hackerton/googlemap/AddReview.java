@@ -121,6 +121,7 @@ public class AddReview extends AppCompatActivity {
     private double distance;
     private int reviewScore;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -424,7 +425,7 @@ public class AddReview extends AppCompatActivity {
 
 
         storageReference = mStorage.getReference()
-                .child("reviewImages").child("uid/"+mFirebaseUser.getUid());
+                .child("reviewImages").child("uid/"+mFirebaseUser.getUid() + date.toString());
         storageReference.putFile(imgUrl).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
