@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -213,7 +214,9 @@ public class MainActivity extends AppCompatActivity  {
                     startActivity(intent3);
                 }
                 else if (id == R.id.survay) {
-                    Toast.makeText(context, title + ": 설문조사", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSd71ocVJEybCD6RacH9zs2bZUMEg-Lqg1BtQAiKRh6THK-v5g/viewform?usp=sf_link"));
+                    startActivity(intent);
+
                 }
 
                 return true;

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -165,6 +166,15 @@ public class ReviewMapfragment extends Fragment implements
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     double latitude = snapshot.getValue(ReviewItem.class).getLatitude();
                     double longitude = snapshot.getValue(ReviewItem.class).getLongitude();
+                    int Score = snapshot.getValue(ReviewItem.class).getScore();
+
+                    if(Score < 100)
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                    else if(Score < 500)
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                    else
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+
                     markerOptions.position(new LatLng(latitude, longitude));
                     markerOptions.title("가게 입니다.");
                     googleMap.addMarker(markerOptions);
@@ -182,11 +192,20 @@ public class ReviewMapfragment extends Fragment implements
 
     }
 
-    public void mCurrentLocation(final GoogleMap googleMap) {
+    public void mCurrentLocation(GoogleMap googleMap){
         GpsTracker gpsTracker = new GpsTracker(getContext());
+        LatLng location = new LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude());
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(gpsTracker.getLatitude(), gpsTracker.getLongitude()), 14));
+        MarkerOptions markerOptions = new MarkerOptions();
 
+        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.dot);
+        Bitmap b=bitmapdraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, 100, 100, false);
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+        markerOptions.position(location);
+
+        googleMap.addMarker(markerOptions);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location,14));
 
     }
 

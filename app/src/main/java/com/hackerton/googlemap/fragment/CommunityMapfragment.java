@@ -224,7 +224,7 @@ public class CommunityMapfragment extends Fragment implements OnMapReadyCallback
 
         MarkerOptions markerOptions = new MarkerOptions();
 
-        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.icon);
+        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.dot);
         Bitmap b=bitmapdraw.getBitmap();
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, 100, 100, false);
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
