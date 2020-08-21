@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -44,6 +46,8 @@ import com.hackerton.googlemap.model.ReviewItem;
 import com.hackerton.googlemap.model.UserItem;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -168,18 +172,12 @@ public class MainActivity extends AppCompatActivity  {
         reference.child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
                 String name = snapshot.child("nickName").getValue(String.class);
                 String profilePhoto = snapshot.child("photoUrl").getValue(String.class);
                 int score = snapshot.child("score").getValue(int.class);
-                //String name = snapshot.getValue(UserItem.class).getNickName();
-                //String profilePhoto = snapshot.getValue(UserItem.class).getPhotoUrl();
-                //int score = snapshot.getValue(UserItem.class).getScore();
+                String userAddress = snapshot.child("address1").getValue(String.class);
                 header_nameTextView.setText(name);
-                //String level = "당신의 신뢰도 점수는" + score;
                 header_levelTextView.setText("당신의 온정포인트는 "+score+"점");
-
-
                 Picasso.with(MainActivity.this).load(profilePhoto).into(header_photo_imageView);
             }
 

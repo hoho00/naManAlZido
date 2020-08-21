@@ -46,8 +46,18 @@ public class MyReviewAdapter extends BaseAdapter {
         TextView my_title = (TextView)view.findViewById(R.id.my_title);
         TextView my_content = (TextView)view.findViewById(R.id.my_content);
 
-        my_title.setText("리뷰 " + position);
-        my_content.setText(review.get(position).getReview());
+        my_title.setText("리뷰 " + (position + 1));
+        int score = review.get(position).getScore();
+        if(score > 500) {
+            my_content.setText(review.get(position).getReview() + "       높은 신뢰 점수 : " + score);
+        }
+        else if(100 < score && score <=500) {
+            my_content.setText(review.get(position).getReview() + "       보통 신뢰 점수 : " + score);
+        }
+        else {
+            my_content.setText(review.get(position).getReview() + "       낮은 신뢰 점수 : " + score);
+        }
+
 
         return view;
     }

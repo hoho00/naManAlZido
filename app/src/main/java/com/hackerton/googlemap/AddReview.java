@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
@@ -114,18 +115,90 @@ public class AddReview extends AppCompatActivity {
     private StorageReference storageReference;
     private int currentScore;
 
+    private EditText scoreBoard;
+    private Location userLocation;
+
+    private double distance;
+    private int reviewScore;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_review);
         // 레이아웃과 변수 연결
         imageView = findViewById(R.id.imageView1);
-
+        scoreBoard = findViewById(R.id.score_board);
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mStorage = FirebaseStorage.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         uid = mFirebaseUser.getUid();
+
+        mDatabase.getReference().child("Users").child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String userAddress = snapshot.child("address1").getValue(String.class);
+                int userScore = snapshot.child("score").getValue(int.class);
+                List<Address> list = null;
+                Geocoder geocoder = new Geocoder(AddReview.this);
+                String str = userAddress;
+                try {
+                    list = geocoder.getFromLocationName(
+                            str, // 지역 이름
+                            10); // 읽을 개수
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("test","입출력 오류 - 서버에서 주소변환시 에러발생");
+                }
+
+                if (list != null) {
+                    if (list.size() == 0) {
+                        //tv.setText("해당되는 주소 정보는 없습니다");
+                    } else {
+                        Log.d("AddReview", "user location success : " + userAddress);
+                        //tv.setText(list.get(0).toString());
+                        //          list.get(0).getCountryName();  // 국가명
+                        double userLatitude = list.get(0).getLatitude();        // 위도
+                        double userLongitude = list.get(0).getLongitude();    // 경도
+                        userLocation = new Location("userAddress");
+                        userLocation.setLatitude(userLatitude);
+                        userLocation.setLongitude(userLongitude);
+                        gpsTracker = new GpsTracker(AddReview.this);
+                        Location curLocation = new Location("curAddress");
+                        curLocation.setLatitude(gpsTracker.getLatitude());
+                        curLocation.setLongitude(gpsTracker.getLongitude());
+                        distance = userLocation.distanceTo(curLocation);
+
+                        Log.d("AddReview", "user score: " + userScore);
+                        int distancePoint = (int) (distance / 1000);
+                        Log.d("AddReview", "distance point: " + distancePoint);
+                        if(distancePoint < 5) {
+                            scoreBoard.setText("높은 신뢰도 점수를 가졌습니다. 이 리뷰의 신뢰도 점수는?" + (500 + userScore));
+                            reviewScore = 500 + userScore;
+                        }
+
+                        else if (distancePoint < 10) {
+                            scoreBoard.setText("보통의 신뢰도 점수를 가집니다. 이 리뷰의 신뢰도 점수는?" + (100 + userScore));
+                            reviewScore = 100 + userScore;
+                        }
+
+                        else {
+                            scoreBoard.setText("낮은 신뢰도 점수를 가집니다. 이 리뷰의 신뢰도 점수는?" + userScore);
+                            reviewScore = userScore;
+                        }
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+        Log.d("AddReview", "outer point: " + distance);
         // 카메라 버튼에 리스터 추가
         // 6.0 마쉬멜로우 이상일 경우에는 권한 체크 후 권한 요청
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -136,7 +209,7 @@ public class AddReview extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         }
-
+        Log.d("AddReview", "outer distance: " + distance);
         // 카메라 앱을 여는 소스
         //sendTakePhotoIntent();
 //        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -364,12 +437,13 @@ public class AddReview extends AppCompatActivity {
                 reviewItem.setPhotoUrl(imageUrl.getResult().toString());
                 reviewItem.setTime(formatDate);
                 Log.d("AddReview", "score: " + currentScore);
-                reviewItem.setScore(50);
+                reviewItem.setScore(reviewScore);
                 reviewItem.setLatitude(latitude);
                 reviewItem.setLongitude(longitude);
                 reviewItem.setPhotoUrl(imageUrl.getResult().toString());
                 mDatabase.getReference().child("reviews").push().setValue(reviewItem);
-                mDatabase.getReference().child("Users").child(uid).child("score").setValue(currentScore + 50);
+                mDatabase.getReference().child("Users").child(uid).child("score").setValue(currentScore + 50 + (reviewScore / 10));
+                Log.d("AddReview", "outer button review score: " + (currentScore + 50 + (reviewScore / 10)));
             }
 
         });
