@@ -119,6 +119,11 @@
         android:padding="5dip"
         android:background="@drawable/rounded_edittext" />
 
+    <EditText
+        android:id="@+id/score_board"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="당신의 신뢰도 점수는"/>
     <Button
         android:id="@+id/submitStart"
         android:layout_width="wrap_content"

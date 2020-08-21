@@ -122,7 +122,7 @@ public class PopupActivity extends Activity {
                                     childUpdates = new HashMap<>();
                                     ReviewItem reviewItem = null;
                                     Map<String, Object> reviewValue =null;
-                                    reviewItem = new ReviewItem(uid, content, photoUrl, time, score+1);
+                                    reviewItem = new ReviewItem(uid, content, photoUrl, time, score+10);
                                     reviewValue = reviewItem.toMap();
 
                                     childUpdates.put(uid,reviewValue);
@@ -140,7 +140,7 @@ public class PopupActivity extends Activity {
                                     childUpdates = new HashMap<>();
                                     ReviewItem reviewItem = null;
                                     Map<String, Object> reviewValue =null;
-                                    reviewItem = new ReviewItem(uid, content, photoUrl, time, score-1);
+                                    reviewItem = new ReviewItem(uid, content, photoUrl, time, score-10);
                                     reviewValue = reviewItem.toMap();
 
                                     childUpdates.put(uid,reviewValue);
