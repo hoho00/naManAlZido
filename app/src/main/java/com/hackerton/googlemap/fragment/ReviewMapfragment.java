@@ -152,7 +152,7 @@ public class ReviewMapfragment extends Fragment implements
 
             startActivity(intent);
 
-            return false;
+            return true;
         }
     };
 

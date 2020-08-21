@@ -351,7 +351,7 @@ public class AddReview extends AppCompatActivity {
 
 
         storageReference = mStorage.getReference()
-                .child("reviewImages").child("uid/"+mFirebaseUser.getUid());
+                .child("reviewImages").child("uid/"+mFirebaseUser.getUid() + new Date().toString());
         storageReference.putFile(imgUrl).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
