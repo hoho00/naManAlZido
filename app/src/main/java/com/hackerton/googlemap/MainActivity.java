@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
+import android.net.Uri;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -210,8 +211,9 @@ public class MainActivity extends AppCompatActivity  {
                     Intent intent3 = new Intent(MainActivity.this, LogInActivity.class);
                     startActivity(intent3);
                 }
-                else if (id == R.id.survey) {
-                    Toast.makeText(context, title + ": 설문조사", Toast.LENGTH_SHORT).show();
+                else if (id == R.id.survay) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSd71ocVJEybCD6RacH9zs2bZUMEg-Lqg1BtQAiKRh6THK-v5g/viewform?usp=sf_link"));
+                    startActivity(intent);
                 }
 
                 return true;
