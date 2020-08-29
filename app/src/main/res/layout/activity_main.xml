@@ -24,9 +24,11 @@
             <ImageView
                 android:id="@+id/toolbar_title"
                 android:layout_width="300dp"
-                android:layout_height="60dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center"
-                android:src="@drawable/logo_backh" />
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="15dp"
+                android:src="@drawable/logo_toolbar" />
 
 
         </androidx.appcompat.widget.Toolbar>

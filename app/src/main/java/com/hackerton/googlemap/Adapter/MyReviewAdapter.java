@@ -1,64 +1,52 @@
 package com.hackerton.googlemap.Adapter;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+
 import com.hackerton.googlemap.R;
+import com.hackerton.googlemap.fragment.ReviewFragment;
 import com.hackerton.googlemap.model.ReviewItem;
 
 import java.util.ArrayList;
 
-public class MyReviewAdapter extends BaseAdapter {
+public class MyReviewAdapter extends FragmentPagerAdapter {
 
-    Context mContext = null;
-    LayoutInflater mLayoutInflater = null;
-    ArrayList<ReviewItem> review;
+    private ArrayList<ReviewFragment> hope;
+    private FragmentManager FM;
 
-    public MyReviewAdapter(Context context, ArrayList<ReviewItem> data){
-        mContext = context;
-        review = data;
-        mLayoutInflater = LayoutInflater.from(mContext);
+    public MyReviewAdapter(@NonNull FragmentManager fm, int behavior) {
+        super(fm, behavior);
+        hope = new ArrayList<ReviewFragment>();
+    }
+
+    @NonNull
+    @Override
+    public Fragment getItem(int position) {
+        return hope.get(position);
     }
 
     @Override
     public int getCount() {
-        return review.size();
+        return hope.size();
     }
 
     @Override
-    public Object getItem(int position) {
-        return review.get(position);
+    public void notifyDataSetChanged() {
+
     }
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View converView, ViewGroup parent) {
-        View view = mLayoutInflater.inflate(R.layout.listview, null);
-
-        TextView my_title = (TextView)view.findViewById(R.id.my_title);
-        TextView my_content = (TextView)view.findViewById(R.id.my_content);
-
-        my_title.setText("리뷰 " + (position + 1));
-        int score = review.get(position).getScore();
-        if(score > 500) {
-            my_content.setText(review.get(position).getReview() + "       높은 신뢰 점수 : " + score);
-        }
-        else if(100 < score && score <=500) {
-            my_content.setText(review.get(position).getReview() + "       보통 신뢰 점수 : " + score);
-        }
-        else {
-            my_content.setText(review.get(position).getReview() + "       낮은 신뢰 점수 : " + score);
-        }
-
-
-        return view;
+    public void addItem(ReviewFragment reviewFragment){
+        hope.add(reviewFragment);
     }
 }

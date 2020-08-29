@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class ReviewItem {
     private String uid;
+    private String title;
     private String review;
     private String photoUrl;
     private String time;
@@ -16,12 +17,23 @@ public class ReviewItem {
 
     public ReviewItem(){}
 
-    public ReviewItem(String uid, String review, String photoUrl, String time, int score) {
+    public ReviewItem(String uid, String title, String review, String photoUrl, String time, int score, double latitude, double longitude) {
         this.uid = uid;
+        this.title = title;
         this.review = review;
         this.photoUrl = photoUrl;
         this.time = time;
         Score = score;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Map<String, Object> toMap() {

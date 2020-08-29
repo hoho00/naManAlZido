@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -104,7 +105,7 @@ public class AddReview extends AppCompatActivity {
     // 현재시간을 date 변수에 저장한다.
     Date date = new Date(now);
     // 시간을 나타냇 포맷을 정한다 ( yyyy/MM/dd 같은 형태로 변형 가능 )
-    SimpleDateFormat sdfNow = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    SimpleDateFormat sdfNow = new SimpleDateFormat("yyyy.MM.dd. HH:mm");
     // nowDate 변수에 값을 저장한다.
     String formatDate = sdfNow.format(date);
     TextView dateNow;
@@ -115,8 +116,10 @@ public class AddReview extends AppCompatActivity {
     private StorageReference storageReference;
     private int currentScore;
 
-    private EditText scoreBoard;
+    private TextView scoreBoard;
     private Location userLocation;
+    private TextView curTime;
+    private TextView curLocation;
 
     private double distance;
     private int reviewScore;
@@ -127,8 +130,11 @@ public class AddReview extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_review);
         // 레이아웃과 변수 연결
+
         imageView = findViewById(R.id.imageView1);
-        scoreBoard = findViewById(R.id.score_board);
+        scoreBoard = findViewById(R.id.addReview_score);
+        curTime = findViewById(R.id.addReview_curTime);
+        curLocation = findViewById(R.id.addReview_curLocation);
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mStorage = FirebaseStorage.getInstance();
@@ -174,17 +180,17 @@ public class AddReview extends AppCompatActivity {
                         int distancePoint = (int) (distance / 1000);
                         Log.d("AddReview", "distance point: " + distancePoint);
                         if(distancePoint < 5) {
-                            scoreBoard.setText("높은 신뢰도 점수를 가졌습니다. 이 리뷰의 신뢰도 점수는?" + (500 + userScore));
+                            scoreBoard.setText(""+500 + userScore);
                             reviewScore = 500 + userScore;
                         }
 
                         else if (distancePoint < 10) {
-                            scoreBoard.setText("보통의 신뢰도 점수를 가집니다. 이 리뷰의 신뢰도 점수는?" + (100 + userScore));
+                            scoreBoard.setText(""+100 + userScore);
                             reviewScore = 100 + userScore;
                         }
 
                         else {
-                            scoreBoard.setText("낮은 신뢰도 점수를 가집니다. 이 리뷰의 신뢰도 점수는?" + userScore);
+                            scoreBoard.setText(""+userScore);
                             reviewScore = userScore;
                         }
 
@@ -216,7 +222,7 @@ public class AddReview extends AppCompatActivity {
 //        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 //        startActivityForResult(cameraIntent, TAKE_PICTURE);
         //시간
-        dateNow = (TextView) findViewById(R.id.timeText1);
+        dateNow = (TextView) findViewById(R.id.addReview_curTime);
         dateNow.setText(formatDate);    // TextView 에 현재 시간 문자열 할당
         //gps
         if (!checkLocationServicesStatus()) {
@@ -225,13 +231,15 @@ public class AddReview extends AppCompatActivity {
             checkRunTimePermission();
         }
 
-        final TextView textview_address = (TextView) findViewById(R.id.addressText1);
+        final TextView textview_address = (TextView) findViewById(R.id.addReview_curLocation);
         gpsTracker = new GpsTracker(AddReview.this);
         latitude = gpsTracker.getLatitude();
         longitude = gpsTracker.getLongitude();
         String address = getCurrentAddress(latitude, longitude);
+        String[] array = address.split(",");
+        address = array[2] + array[1] +"\n"+ array[0];
         curAddress = address;
-        textview_address.setText(address + latitude + longitude);
+        textview_address.setText(address);
 
         mDatabase.getReference().child("Users").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
@@ -412,11 +420,18 @@ public class AddReview extends AppCompatActivity {
                 || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
     public void certi_camera_submit(View view) {
-        final EditText reviewText = findViewById(R.id.editTextTextMultiLine);
+        final EditText reviewText = findViewById(R.id.addReview_edit_review);
+        final EditText titleText = findViewById(R.id.addReview_edit_title);
+        if(titleText.getText().toString().equals("")) {
+            Toast.makeText(this, "제목을 입력해 주세요", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if(reviewText.getText().toString().equals("")) {
             Toast.makeText(this, "리뷰를 입력해 주세요", Toast.LENGTH_SHORT).show();
             return;
         }
+
         if (imgUrl == null) {
             Toast.makeText(this, "사진을 추가해 주세요", Toast.LENGTH_SHORT).show();
             return;
@@ -432,8 +447,10 @@ public class AddReview extends AppCompatActivity {
                 final Task<Uri> imageUrl = task.getResult().getStorage().getDownloadUrl();
                 while (!imageUrl.isComplete()) ;
                 String review = reviewText.getText().toString();
+                String title = titleText.getText().toString();
                 ReviewItem reviewItem = new ReviewItem();
                 reviewItem.setUid(mFirebaseUser.getUid());
+                reviewItem.setTitle(title);
                 reviewItem.setReview(review);
                 reviewItem.setPhotoUrl(imageUrl.getResult().toString());
                 reviewItem.setTime(formatDate);
@@ -500,5 +517,12 @@ public class AddReview extends AppCompatActivity {
 
     public void set_review_image(View view) {
         showFileChoose();
+    }
+
+    public void back_to_main(View view) {
+        finish();
+    }
+
+    public void back_to(View view) {
     }
 }

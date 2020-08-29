@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -20,7 +21,7 @@ public class AddArticle extends AppCompatActivity {
     EditText EditText_Title;
     EditText EditText_Content;
     TextView Text_Time;
-    Button Button_Summit;
+    ImageButton Button_Summit;
 
     GpsTracker gpsTracker;
 
@@ -34,7 +35,7 @@ public class AddArticle extends AppCompatActivity {
         EditText_Title = (EditText) findViewById(R.id.AddArticle_title);
         EditText_Content = (EditText) findViewById(R.id.AddArticle_content);
         Text_Time = (TextView) findViewById(R.id.AddArticle_time);
-        Button_Summit = (Button) findViewById(R.id.AddArticle_SummitBtn);
+        Button_Summit = (ImageButton) findViewById(R.id.AddArticle_SummitBtn);
 
         Text_Time.setText(new Date(System.currentTimeMillis()).toString());
 
@@ -56,5 +57,9 @@ public class AddArticle extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void back_to(View view) {
+        finish();
     }
 }

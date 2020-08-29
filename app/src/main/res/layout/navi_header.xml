@@ -1,52 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="176dp"
+    android:layout_height="300dp"
     android:background="@color/colorMain"
-    android:paddingBottom="16dp"
+    android:gravity="center|top"
+    android:orientation="vertical"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp"
     android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
-    android:orientation="horizontal"
-    android:gravity="center">
+    android:visibility="visible">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:id="@+id/header_photo_imageView"
-        app:civ_border_color="@color/black"
-        app:civ_border_width="0dp"
-        />
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_gravity="left">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:id="@+id/header_name_textView"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:fontFamily="@font/maplestory_light"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/header_level_textView"
-            android:fontFamily="@font/maplestory_light"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/header_email_textView"
-            android:fontFamily="@font/maplestory_light"/>
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="35dp"
+            android:background="@color/colorMain"
+            android:src="@drawable/back_button"
+            android:scaleType="fitXY"/>
 
     </LinearLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/header_photo_imageView"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="10dp"
+        app:civ_border_color="@color/design_default_color_on_primary"
+        app:civ_border_width="1.5dp" />
+
+    <TextView
+        android:id="@+id/header_name_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        android:fontFamily="@font/maplestory_light"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="25dp"
+        android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/header_level_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/maplestory_light"
+            android:layout_marginTop="20dp"
+            android:textSize="20dp"/>
 
 </LinearLayout>

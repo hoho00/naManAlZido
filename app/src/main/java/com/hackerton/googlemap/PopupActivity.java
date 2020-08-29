@@ -89,10 +89,13 @@ public class PopupActivity extends Activity {
                         Picasso.with(PopupActivity.this).load(photo).into(imageView);
 
                         final String content = snapshot.child("review").getValue(String.class);
+                        final String title = snapshot.child("title").getValue(String.class);
                         final String uid = snapshot.child("uid").getValue(String.class);
                         final String photoUrl = snapshot.child("photoUrl").getValue(String.class);
                         final String time = snapshot.child("time").getValue(String.class);
                         final int score = snapshot.child("score").getValue(int.class);
+                        final double latitude = snapshot.child("latitude").getValue(double.class);
+                        final double longitude = snapshot.child("longitude").getValue(double.class);
 
                         if(uid.equals(user.getUid())) {
                             button1.setVisibility(View.INVISIBLE);
@@ -122,7 +125,7 @@ public class PopupActivity extends Activity {
                                     childUpdates = new HashMap<>();
                                     ReviewItem reviewItem = null;
                                     Map<String, Object> reviewValue =null;
-                                    reviewItem = new ReviewItem(uid, content, photoUrl, time, score+10);
+                                    reviewItem = new ReviewItem(uid, title, content, photoUrl, time, score+10, latitude, longitude);
                                     reviewValue = reviewItem.toMap();
 
                                     childUpdates.put(uid,reviewValue);
@@ -140,7 +143,7 @@ public class PopupActivity extends Activity {
                                     childUpdates = new HashMap<>();
                                     ReviewItem reviewItem = null;
                                     Map<String, Object> reviewValue =null;
-                                    reviewItem = new ReviewItem(uid, content, photoUrl, time, score-10);
+                                    reviewItem = new ReviewItem(uid, title, content, photoUrl, time, score-10, latitude, longitude);
                                     reviewValue = reviewItem.toMap();
 
                                     childUpdates.put(uid,reviewValue);

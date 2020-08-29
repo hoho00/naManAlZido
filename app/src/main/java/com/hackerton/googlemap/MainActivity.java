@@ -60,9 +60,9 @@ public class MainActivity extends AppCompatActivity  {
     private Context context = this;
 
     private TextView header_nameTextView;
-    private TextView header_emailTextView;
     private TextView header_levelTextView;
     private CircleImageView header_photo_imageView;
+    private String profile_image;
 
     private TextView nameTextView;
     private TextView emailTextView;
@@ -152,20 +152,17 @@ public class MainActivity extends AppCompatActivity  {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true); // 햄버거 버튼 만들기
+        actionBar.setDisplayHomeAsUpEnabled(true);// 햄버거 버튼 만들기
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_foreground); //햄버거 버튼 이미지 지정
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         DatabaseReference db = FirebaseDatabase.getInstance().getReference("Users");
         NavigationView navigationView = findViewById(R.id.nav_view);
         View view = navigationView.getHeaderView(0);
-
         // 네비게이션바 이름, 이메일 표시
         header_nameTextView = (TextView) view.findViewById(R.id.header_name_textView);
-        header_emailTextView = (TextView) view.findViewById(R.id.header_email_textView);
         header_levelTextView = (TextView) view.findViewById(R.id.header_level_textView);
         header_photo_imageView = (CircleImageView) view.findViewById(R.id.header_photo_imageView);
 
-        header_emailTextView.setText(user.getEmail());// 파이어베이스 이메일 불러오기
         String uid = user.getUid();
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -175,10 +172,11 @@ public class MainActivity extends AppCompatActivity  {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String name = snapshot.child("nickName").getValue(String.class);
                 String profilePhoto = snapshot.child("photoUrl").getValue(String.class);
+                profile_image = profilePhoto;
                 int score = snapshot.child("score").getValue(int.class);
                 String userAddress = snapshot.child("address1").getValue(String.class);
                 header_nameTextView.setText(name);
-                header_levelTextView.setText("당신의 온정포인트는 "+score+"점");
+                header_levelTextView.setText(score+" Point");
                 Picasso.with(MainActivity.this).load(profilePhoto).into(header_photo_imageView);
             }
 
@@ -200,6 +198,7 @@ public class MainActivity extends AppCompatActivity  {
                     Toast.makeText(context, title + ": 계정 정보를 확인합니다.", Toast.LENGTH_SHORT).show();
                     if(auth != null){
                         Intent intent1 = new Intent(MainActivity.this, MyPage.class);
+                        intent1.putExtra("profile", profile_image);
                         startActivity(intent1);
                     }
                 } else if (id == R.id.developer) {
@@ -267,7 +266,6 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             default:
                 break;
-
         }
     }
 }
