@@ -167,13 +167,36 @@ public class ReviewMapfragment extends Fragment implements
                     double latitude = snapshot.getValue(ReviewItem.class).getLatitude();
                     double longitude = snapshot.getValue(ReviewItem.class).getLongitude();
                     int Score = snapshot.getValue(ReviewItem.class).getScore();
+                    BitmapDrawable bitmapdraw_bronze = (BitmapDrawable)getResources().getDrawable(R.drawable.dong);
+                    Bitmap bronze = bitmapdraw_bronze.getBitmap();
 
-                    if(Score < 100)
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                    else if(Score < 500)
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                    else
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                    BitmapDrawable bitmapdraw_silver = (BitmapDrawable)getResources().getDrawable(R.drawable.eun);
+                    Bitmap silver = bitmapdraw_silver.getBitmap();
+
+                    BitmapDrawable bitmapdraw_gold = (BitmapDrawable)getResources().getDrawable(R.drawable.geum);
+                    Bitmap gold = bitmapdraw_gold.getBitmap();
+
+                    BitmapDrawable bitmapdraw_king = (BitmapDrawable)getResources().getDrawable(R.drawable.king);
+                    Bitmap king = bitmapdraw_king.getBitmap();
+
+                    if(Score < 100) {
+                        Bitmap smallMarker = Bitmap.createScaledBitmap(bronze, 100, 100, false);
+                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                    }
+                    else if(Score < 500) {
+                        Bitmap smallMarker = Bitmap.createScaledBitmap(silver, 100, 100, false);
+                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                    }
+
+                    else if(Score < 1000) {
+                        Bitmap smallMarker = Bitmap.createScaledBitmap(gold, 100, 100, false);
+                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                    }
+
+                    else {
+                        Bitmap smallMarker = Bitmap.createScaledBitmap(king, 100, 100, false);
+                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                    }
 
                     markerOptions.position(new LatLng(latitude, longitude));
                     googleMap.addMarker(markerOptions);

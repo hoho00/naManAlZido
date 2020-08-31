@@ -268,4 +268,8 @@ public class MainActivity extends AppCompatActivity  {
                 break;
         }
     }
+
+    public void fold_navi(View view) {
+        mDrawerLayout.close();
+    }
 }

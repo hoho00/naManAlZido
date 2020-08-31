@@ -2,6 +2,9 @@ package com.hackerton.googlemap;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -10,12 +13,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,9 +40,9 @@ import java.util.Map;
 
 public class PopupActivity extends Activity {
 
-    TextView addressText, timeText, Review;
-    ImageView imageView;
-    Button button1, button2;
+    private TextView addressText, timeText, Review, rateText;
+    private ImageView imageView, rateImage;
+    private ImageButton button1, button2;
     private FirebaseUser user;
     private FirebaseAuth auth;
 
@@ -54,6 +59,8 @@ public class PopupActivity extends Activity {
         Review = findViewById(R.id.Review);
         button1 = findViewById(R.id.Button1);
         button2 = findViewById(R.id.Button2);
+        rateText = findViewById(R.id.rate_text);
+        rateImage = findViewById(R.id.rate_image);
 
         Intent intent = getIntent();
 
@@ -94,13 +101,48 @@ public class PopupActivity extends Activity {
                         final String photoUrl = snapshot.child("photoUrl").getValue(String.class);
                         final String time = snapshot.child("time").getValue(String.class);
                         final int score = snapshot.child("score").getValue(int.class);
+                        rateText.setText(""+score+"점인 리뷰 입니다.");
+
+                        BitmapDrawable bitmapdraw_bronze = (BitmapDrawable)getResources().getDrawable(R.drawable.dong);
+                        Bitmap bronze = bitmapdraw_bronze.getBitmap();
+
+                        BitmapDrawable bitmapdraw_silver = (BitmapDrawable)getResources().getDrawable(R.drawable.eun);
+                        Bitmap silver = bitmapdraw_silver.getBitmap();
+
+                        BitmapDrawable bitmapdraw_gold = (BitmapDrawable)getResources().getDrawable(R.drawable.geum);
+                        Bitmap gold = bitmapdraw_gold.getBitmap();
+
+                        BitmapDrawable bitmapdraw_king = (BitmapDrawable)getResources().getDrawable(R.drawable.king);
+                        Bitmap king = bitmapdraw_king.getBitmap();
+
+                        if(score < 100) {
+                            Bitmap smallMarker = Bitmap.createScaledBitmap(bronze, 100, 100, false);
+                            rateImage.setImageBitmap(smallMarker);
+                        }
+                        else if(score < 500) {
+                            Bitmap smallMarker = Bitmap.createScaledBitmap(silver, 100, 100, false);
+                            rateImage.setImageBitmap(smallMarker);
+                        }
+
+                        else if(score < 1000) {
+                            Bitmap smallMarker = Bitmap.createScaledBitmap(gold, 100, 100, false);
+                            rateImage.setImageBitmap(smallMarker);
+                        }
+
+                        else {
+                            Bitmap smallMarker = Bitmap.createScaledBitmap(king, 100, 100, false);
+                            rateImage.setImageBitmap(smallMarker);
+                        }
+
                         final double latitude = snapshot.child("latitude").getValue(double.class);
                         final double longitude = snapshot.child("longitude").getValue(double.class);
 
                         if(uid.equals(user.getUid())) {
+                            BitmapDrawable bitmapdraw_delete = (BitmapDrawable)getResources().getDrawable(R.drawable.delete_button);
+                            Bitmap deleteBitmap = bitmapdraw_delete.getBitmap();
                             button1.setVisibility(View.INVISIBLE);
-                            button2.setText("삭제");
-                            button2.setGravity(Gravity.CENTER);
+                            Bitmap smallDeleteBitmap = Bitmap.createScaledBitmap(deleteBitmap, 40, 40, false);
+                            button2.setImageBitmap(smallDeleteBitmap);
 
                             button2.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -112,8 +154,15 @@ public class PopupActivity extends Activity {
 
 
                         }else{
-                            button1.setText("좋아요");
-                            button2.setText("싫어요");
+                            BitmapDrawable bitmapdraw_like = (BitmapDrawable)getResources().getDrawable(R.drawable.like_button);
+                            Bitmap likeBitmap = bitmapdraw_like.getBitmap();
+                            Bitmap smallLikeBitmap = Bitmap.createScaledBitmap(likeBitmap, 40, 40, false);
+                            button1.setImageBitmap(smallLikeBitmap);
+
+                            BitmapDrawable bitmapdraw_dislike = (BitmapDrawable)getResources().getDrawable(R.drawable.dislike_button);
+                            Bitmap dislikeBitmap = bitmapdraw_dislike.getBitmap();
+                            Bitmap smallDisLikeBitmap = Bitmap.createScaledBitmap(dislikeBitmap, 40, 40, false);
+                            button2.setImageBitmap(smallDisLikeBitmap);
 
                             button1.setOnClickListener(new View.OnClickListener() {
                                 @Override

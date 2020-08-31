@@ -460,7 +460,7 @@ public class AddReview extends AppCompatActivity {
                 reviewItem.setLongitude(longitude);
                 reviewItem.setPhotoUrl(imageUrl.getResult().toString());
                 mDatabase.getReference().child("reviews").push().setValue(reviewItem);
-                mDatabase.getReference().child("Users").child(uid).child("score").setValue(currentScore + 50 + (reviewScore / 10));
+                mDatabase.getReference().child("Users").child(uid).child("score").setValue(currentScore + 50 + (reviewScore / 100));
                 Log.d("AddReview", "outer button review score: " + (currentScore + 50 + (reviewScore / 10)));
             }
 

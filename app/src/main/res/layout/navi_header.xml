@@ -19,6 +19,7 @@
         android:layout_gravity="left">
 
         <ImageButton
+            android:onClick="fold_navi"
             android:layout_width="30dp"
             android:layout_height="35dp"
             android:background="@color/colorMain"
