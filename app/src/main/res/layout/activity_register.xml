@@ -1,75 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ScrollView1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        tools:srcCompat="@tools:sample/avatars[3]"
-        android:layout_margin="50dp"
-        android:src="@drawable/logo"/>
+        <ImageView
+            android:id="@+id/imgPreview"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_below="@+id/txtUploadImage"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/imagepreview" />
 
-    <EditText
-        android:id="@+id/name_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Name" />
+        <Button
+            android:id="@+id/chooseImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/uploadProgress"
+            android:layout_marginTop="40px"
+            android:drawableLeft="@drawable/icon_camera"
+            android:text="프로필 사진을 설정 해 주세요"
+            android:textSize="18sp" />
 
-    <EditText
-        android:id="@+id/email_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Email"
-        android:inputType="textEmailAddress"/>
+        <EditText
+            android:id="@+id/name_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Name" />
 
-    <EditText
-        android:id="@+id/password_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="password"
-        android:inputType="textPassword" />
-    <EditText
-        android:id="@+id/passwordcheck_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="password check"
-        android:inputType="textPassword" />
+        <EditText
+            android:id="@+id/email_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:inputType="textEmailAddress" />
 
-    <EditText
-        android:id="@+id/et_address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="거주지 도로명 주소" />
-    <EditText
-        android:id="@+id/et_address2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="학교/직장 도로명 주소" />
+        <EditText
+            android:id="@+id/password_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="password"
+            android:inputType="textPassword" />
 
-    <Button
-        android:id="@+id/get_home_address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="register_address1_btn"
-        android:text="거주지 도로명 주소 불러오기"/>
+        <EditText
+            android:id="@+id/passwordcheck_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="password check"
+            android:inputType="textPassword" />
 
-    <Button
-        android:id="@+id/get_school_address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="register_address2_btn"
-        android:text="학교/직장 도로명 주소 불러오기"/>
+        <EditText
+            android:id="@+id/et_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="거주지 도로명 주소" />
 
-    <Button
-        android:onClick="register_success_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="가입" />
+        <EditText
+            android:id="@+id/et_address2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="학교/직장 도로명 주소" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/get_home_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="register_address1_btn"
+            android:text="거주지 도로명 주소 불러오기" />
+
+        <Button
+            android:id="@+id/get_school_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="register_address2_btn"
+            android:text="학교/직장 도로명 주소 불러오기" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="register_success_btn"
+            android:text="가입" />
+
+    </LinearLayout>
+</ScrollView>

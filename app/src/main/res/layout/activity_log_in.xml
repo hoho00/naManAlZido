@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         tools:srcCompat="@tools:sample/avatars[3]"
-        android:src="@drawable/logo"
+        android:src="@drawable/logo_green"
         android:layout_margin="50dp"/>
 
     <EditText

@@ -2,17 +2,29 @@ package com.hackerton.googlemap;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.net.Uri;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
@@ -31,21 +43,34 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.hackerton.googlemap.model.ReviewItem;
+import com.hackerton.googlemap.model.UserItem;
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
     private DrawerLayout mDrawerLayout;
     private Context context = this;
-    private FloatingActionButton fab;
+
     private TextView header_nameTextView;
-    private TextView header_emailTextView;
+    private TextView header_levelTextView;
+    private CircleImageView header_photo_imageView;
+    private String profile_image;
 
     private TextView nameTextView;
     private TextView emailTextView;
 
     private FirebaseAuth auth;
     private FirebaseUser user;
+
+    private int mTabPosition;
 
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
@@ -59,21 +84,22 @@ public class MainActivity extends AppCompatActivity {
     // 첫 번째 뒤로가기 버튼을 누를때 표시
     private Toast toast;
 
+    //floating button
+    private FloatingActionButton fab;
+
+
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        setContentView(R.layout.activity_main);
-        Intent intent = new Intent(this.getIntent());
-        String sendingString = intent.getStringExtra("recent_review");
-        String formatdate = intent.getStringExtra("recent_date");
 
         mTabLayout = (TabLayout) findViewById(R.id.main_tablayout);
-        mTabLayout.addTab(mTabLayout.newTab().setText("Tab One"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("Tab Two"));
+        mTabLayout.addTab(mTabLayout.newTab().setIcon(R.drawable.review_map_icon));
+        mTabLayout.addTab(mTabLayout.newTab().setIcon(R.drawable.community_map_icon));
         mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 
@@ -85,17 +111,26 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setAdapter(pagerAdapter);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
 
+        TabLayout.Tab tab =  mTabLayout.getTabAt(0);
+        int icon_color = ContextCompat.getColor(context,R.color.colorMain);
+        tab.getIcon().setColorFilter(icon_color, PorterDuff.Mode.SRC_IN);
+
         // Set TabSelectedListener
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
+                int icon_color = ContextCompat.getColor(context,R.color.colorMain);
+                tab.getIcon().setColorFilter(icon_color, PorterDuff.Mode.SRC_IN);
+                mTabPosition = tab.getPosition();
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
 
+                int icon_color = ContextCompat.getColor(context, R.color.black);
+                tab.getIcon().setColorFilter(icon_color, PorterDuff.Mode.SRC_IN);
             }
 
             @Override
@@ -105,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // 플롯팅 액션 버튼
-        FloatingActionButton fab = findViewById(R.id.fab);
+        fab  = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -117,25 +152,38 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true); // 햄버거 버튼 만들기
+        actionBar.setDisplayHomeAsUpEnabled(true);// 햄버거 버튼 만들기
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_foreground); //햄버거 버튼 이미지 지정
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         DatabaseReference db = FirebaseDatabase.getInstance().getReference("Users");
-
         NavigationView navigationView = findViewById(R.id.nav_view);
         View view = navigationView.getHeaderView(0);
-
         // 네비게이션바 이름, 이메일 표시
         header_nameTextView = (TextView) view.findViewById(R.id.header_name_textView);
-        header_emailTextView = (TextView) view.findViewById(R.id.header_email_textView);
+        header_levelTextView = (TextView) view.findViewById(R.id.header_level_textView);
+        header_photo_imageView = (CircleImageView) view.findViewById(R.id.header_photo_imageView);
 
-        header_nameTextView.setText(user.getDisplayName());   // 파이어베이스 이름 불러오기
-        header_emailTextView.setText(user.getEmail());        // 파이어베이스 이메일 불러오기
+        String uid = user.getUid();
 
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference reference = database.getReference("Users");
+        reference.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String name = snapshot.child("nickName").getValue(String.class);
+                String profilePhoto = snapshot.child("photoUrl").getValue(String.class);
+                profile_image = profilePhoto;
+                int score = snapshot.child("score").getValue(int.class);
+                String userAddress = snapshot.child("address1").getValue(String.class);
+                header_nameTextView.setText(name);
+                header_levelTextView.setText(score+" Point");
+                Picasso.with(MainActivity.this).load(profilePhoto).into(header_photo_imageView);
+            }
 
-
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -149,14 +197,12 @@ public class MainActivity extends AppCompatActivity {
                 if (id == R.id.account) {
                     Toast.makeText(context, title + ": 계정 정보를 확인합니다.", Toast.LENGTH_SHORT).show();
                     if(auth != null){
-                        Toast.makeText(context, " 정보 확인 ", Toast.LENGTH_SHORT).show();
-
                         Intent intent1 = new Intent(MainActivity.this, MyPage.class);
+                        intent1.putExtra("profile", profile_image);
                         startActivity(intent1);
-
                     }
-                } else if (id == R.id.setting) {
-                    Toast.makeText(context, title + ": 설정 정보를 확인합니다.", Toast.LENGTH_SHORT).show();
+                } else if (id == R.id.developer) {
+                    Toast.makeText(context, title + ": 만든 사람들", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.logout) {
                     Toast.makeText(context, title + ": 로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
                     auth.signOut();
@@ -164,12 +210,17 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent3 = new Intent(MainActivity.this, LogInActivity.class);
                     startActivity(intent3);
                 }
+                else if (id == R.id.survay) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSd71ocVJEybCD6RacH9zs2bZUMEg-Lqg1BtQAiKRh6THK-v5g/viewform?usp=sf_link"));
+                    startActivity(intent);
+                }
 
                 return true;
             }
         });
 
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -205,7 +256,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void add_review(View view) {
-        startActivity(new Intent(MainActivity.this, AddReview.class));
+
+        switch (mTabPosition){
+            case 0:
+                startActivity(new Intent(MainActivity.this, AddReview.class));
+                break;
+            case 1:
+                startActivity(new Intent(MainActivity.this, AddArticle.class));
+                break;
+            default:
+                break;
+        }
     }
 
+    public void fold_navi(View view) {
+        mDrawerLayout.close();
+    }
 }

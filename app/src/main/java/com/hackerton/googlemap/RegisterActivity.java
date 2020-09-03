@@ -1,30 +1,61 @@
 package com.hackerton.googlemap;
 
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.content.CursorLoader;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.installations.local.PersistedInstallation;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 import com.hackerton.googlemap.model.UserItem;
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 public class RegisterActivity extends AppCompatActivity {
-
+    private static final int CHOOSE_IMAGE = 1;
     private static final String TAG = "RegisterActivity";
     private EditText mEmailText, mPasswordText, mPasswordcheckText, mName;
     private FirebaseAuth firebaseAuth;
+    private Button chooseImage;
+    private Uri imgUrl;
+    private ImageView imgPreview;
+    private String pathUri;
+    private String registerPhoto;
+    private StorageReference storageReference;
+    private UserItem userItem;
+    private boolean uploading = true;
+
 
 
     private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
@@ -32,35 +63,45 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText et_address, et_address2;
     private static boolean address1, address2;
 
+    private FirebaseDatabase mDatabase;
+    private FirebaseStorage mStorage;
+
+    private StorageTask mUploadTask;
+
+    private ProgressBar uploadProgress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
-        //액션 바 등록하기
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setTitle("Create Account");
-//
-//        actionBar.setDisplayHomeAsUpEnabled(true); //뒤로가기버튼
-//        actionBar.setDisplayShowHomeEnabled(true); //홈 아이콘
-//
-        //파이어베이스 접근 설정
-        //user = firebaseAuth.getCurrentUser();
+        chooseImage = findViewById(R.id.chooseImage);
+        imgPreview = findViewById(R.id.imgPreview);
         firebaseAuth = FirebaseAuth.getInstance();
-        //firebaseDatabase = FirebaseDatabase.getInstance().getReference();
-
         mEmailText = findViewById(R.id.email_edit);
         mPasswordText = findViewById(R.id.password_edit);
         mPasswordcheckText = findViewById(R.id.passwordcheck_edit);
         mName = findViewById(R.id.name_edit);
         et_address = findViewById(R.id.et_address);
         et_address2 = findViewById(R.id.et_address2);
+        mStorage = FirebaseStorage.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
 
-        //파이어베이스 user 로 접글
+        chooseImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFileChoose();
+            }
+        });
 
-        //가입버튼 클릭리스너   -->  firebase에 데이터를 저장한다.
-
+        userItem = new UserItem();
     }
+
+    private void showFileChoose() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+        startActivityForResult(intent, CHOOSE_IMAGE);
+    }
+
 
     public void register_success_btn(View view) {
         final String email = mEmailText.getText().toString().trim();
@@ -70,62 +111,68 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (pwd.equals(pwdcheck)) {
             Log.d(TAG, "등록 버튼 " + email + " , " + pwd);
-            final ProgressDialog mDialog = new ProgressDialog(RegisterActivity.this);
-            mDialog.setMessage("가입중입니다...");
-            mDialog.show();
+            try {
+                //파이어베이스에 신규계정 등록하기
+                firebaseAuth.createUserWithEmailAndPassword(email, pwd).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        //가입 성공시
+                        if (task.isSuccessful()) {
+                            Toast.makeText(RegisterActivity.this, "회원 정보를 등록하는 중 입니다. 잠시만 기다려 주세요", Toast.LENGTH_LONG).show();
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            final String email = user.getEmail();
+                            final String uid = user.getUid();
+                            final String name = mName.getText().toString().trim();
+                            final String address1 = et_address.getText().toString();
+                            final String address2 = et_address2.getText().toString();
 
-            //파이어베이스에 신규계정 등록하기
-            firebaseAuth.createUserWithEmailAndPassword(email, pwd).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
+                            final Uri file = Uri.fromFile(new File(pathUri)); // path
 
-                    //가입 성공시
-                    if (task.isSuccessful()) {
-                        mDialog.dismiss();
-                        FirebaseUser user = firebaseAuth.getCurrentUser();
-                        String email = user.getEmail();
-                        String uid = user.getUid();
-                        String name = mName.getText().toString().trim();
-                        String address1 = et_address.getText().toString();
-                        String address2 = et_address2.getText().toString();
-
-                        UserItem userItem = new UserItem();
-                        userItem.setId(email);
-                        userItem.setNickName(name);
-                        userItem.setAddress1(address1);
-                        userItem.setAddress2(address2);
-                        userItem.setScore(0);
-                        userItem.setPhotoUrl("photo");//추가 해야됨
-
-                        /*
-                        //해쉬맵 테이블을 파이어베이스 데이터베이스에 저장
-                        HashMap<Object, String> hashMap = new HashMap<>();
-                        hashMap.put("uid", uid);
-                        hashMap.put("email", email);
-                        hashMap.put("name", name);
-                        //hashMap.put("Address")
-                        hashMap.put("score", "0");
-
-                         */
-                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                        DatabaseReference reference = database.getReference("Users");
-                        reference.child(uid).setValue(userItem);
+                            storageReference = mStorage.getReference()
+                                    .child("usersprofileImages").child("uid/"+uid);
+                            storageReference.putFile(imgUrl).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                    final Task<Uri> imageUrl = task.getResult().getStorage().getDownloadUrl();
+                                    while (!imageUrl.isComplete()) {
+                                        uploading = true;
+                                    }
+                                    registerPhoto = imageUrl.getResult().toString();
+                                    Log.d("RegisterActivity", "load: " + registerPhoto);
+                                    userItem.setPhotoUrl(registerPhoto);
+                                    uploading = false;
+                                    if(!uploading) {
+                                        userItem.setId(email);
+                                        userItem.setNickName(name);
+                                        userItem.setAddress1(address1);
+                                        userItem.setAddress2(address2);
+                                        userItem.setScore(0);
+                                        Log.d("RegisterActivity", "set user: " + registerPhoto);
+                                        // database에 저장
+                                        mDatabase.getReference("Users").child(uid)
+                                                .setValue(userItem);
+                                        //가입이 이루어져을시 가입 화면을 빠져나감.
+                                        Intent intent = new Intent(RegisterActivity.this, LogInActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                        Toast.makeText(RegisterActivity.this, "회원가입에 성공하셨습니다.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
 
 
 
-                        //가입이 이루어져을시 가입 화면을 빠져나감.
-                        Intent intent = new Intent(RegisterActivity.this, LogInActivity.class);
-                        startActivity(intent);
-                        finish();
-                        Toast.makeText(RegisterActivity.this, "회원가입에 성공하셨습니다.", Toast.LENGTH_SHORT).show();
 
-                    } else {
-                        mDialog.dismiss();
-                        Toast.makeText(RegisterActivity.this, "이미 존재하는 아이디 입니다.", Toast.LENGTH_SHORT).show();
-                        return;  //해당 메소드 진행을 멈추고 빠져나감.
+                        } else {
+                            Toast.makeText(RegisterActivity.this, "이미 존재하는 아이디 입니다.", Toast.LENGTH_SHORT).show();
+                            return;  //해당 메소드 진행을 멈추고 빠져나감.
+                        }
                     }
-                }
-            });
+                });
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+
             //비밀번호 오류시
         } else {
             Toast.makeText(RegisterActivity.this, "비밀번호가 틀렸습니다. 다시 입력해 주세요.", Toast.LENGTH_SHORT).show();
@@ -152,13 +199,12 @@ public class RegisterActivity extends AppCompatActivity {
         startActivityForResult(intent, SEARCH_ADDRESS_ACTIVITY);
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent intent){
+    public void onActivityResult(int requestCode, int resultCode,  @Nullable Intent intent){
         super.onActivityResult(requestCode, resultCode, intent);
         switch(requestCode){
             case SEARCH_ADDRESS_ACTIVITY:
                 if(resultCode == RESULT_OK){
                     String data = intent.getExtras().getString("data");
-                    //String school  = intent.getExtras().getString("buildingName");
                     if (data != null)
                         if(address1 && !address2) {
                             et_address.setText(data);
@@ -168,6 +214,23 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                 }
                 break;
+            case CHOOSE_IMAGE:
+                if(intent != null && intent.getData() != null) {
+                    imgUrl = intent.getData();
+                    pathUri = getPath(intent.getData());
+                    Picasso.with(this).load(imgUrl).into(imgPreview);
+                }
+                break;
         }
     }
+
+    public String getPath(Uri uri) {
+        String[] proj = {MediaStore.Images.Media.DATA};
+        CursorLoader cursorLoader = new CursorLoader(this, uri, proj, null, null, null);
+        Cursor cursor = cursorLoader.loadInBackground();
+        int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(index);
+    }
+
 }
