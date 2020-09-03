@@ -180,12 +180,12 @@ public class AddReview extends AppCompatActivity {
                         int distancePoint = (int) (distance / 1000);
                         Log.d("AddReview", "distance point: " + distancePoint);
                         if(distancePoint < 5) {
-                            scoreBoard.setText(""+500 + userScore);
+                            scoreBoard.setText(""+(500 + userScore));
                             reviewScore = 500 + userScore;
                         }
 
                         else if (distancePoint < 10) {
-                            scoreBoard.setText(""+100 + userScore);
+                            scoreBoard.setText(""+(100 + userScore));
                             reviewScore = 100 + userScore;
                         }
 
