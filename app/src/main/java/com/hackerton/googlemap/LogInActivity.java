@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,7 +21,7 @@ public class LogInActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     EditText mEmailText, mPasswordText;
-    private Button login, register;
+    private ImageButton login, register;
     boolean autoLogin;
 
     @Override
@@ -33,8 +34,8 @@ public class LogInActivity extends AppCompatActivity {
 
 
         firebaseAuth =  FirebaseAuth.getInstance();
-        login = (Button)findViewById(R.id.login_btn);
-        register = (Button)findViewById(R.id.register_btn);
+        login = (ImageButton)findViewById(R.id.login_btn);
+        register = (ImageButton)findViewById(R.id.register_btn);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
