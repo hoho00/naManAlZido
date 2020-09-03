@@ -10,7 +10,7 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="180dp"
         tools:srcCompat="@tools:sample/avatars[3]"
         android:src="@drawable/logo_green"
         android:layout_margin="50dp"/>
@@ -29,22 +29,24 @@
         android:hint="password"
         android:inputType="textPassword" />
 
-    <Button
+
+
+    <ImageButton
         android:id="@+id/login_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="로그인" />
+        android:src="@drawable/login_button"
+        android:background="@color/white"
+        android:layout_marginTop="20dp"/>
 
-    <Button
+    <ImageButton
         android:id="@+id/register_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="가입" />
+        android:src="@drawable/regist"
+        android:background="@color/white"
+        android:layout_marginTop="5dp"/>
 
-    <Button
-        android:onClick="auto_login_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="기존정보로 로그인"/>
+
 
 </LinearLayout>
