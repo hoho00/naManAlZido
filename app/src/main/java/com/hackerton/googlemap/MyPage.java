@@ -67,12 +67,13 @@ public class MyPage extends AppCompatActivity {
                     String uid = snapshot.child("uid").getValue(String.class);
                     String photoUrl = snapshot.child("photoUrl").getValue(String.class);
                     String time = snapshot.child("time").getValue(String.class);
-                    double latitude = snapshot.child("latitude").getValue(double.class);
-                    double longitude = snapshot.child("longitude").getValue(double.class);
+                    //double latitude = snapshot.child("latitude").getValue(double.class);
+                    //double longitude = snapshot.child("longitude").getValue(double.class);
                     int score = snapshot.getValue(ReviewItem.class).getScore();
 
                     if(uid.equals(user.getUid())) {
-                        myReviewAdapter.addItem(new ReviewFragment(title, photoUrl));
+                        String includeScore = title + "\n" + Integer.toString(score) + "점 인 리뷰입니다.";
+                        myReviewAdapter.addItem(new ReviewFragment(includeScore, photoUrl));
                     }
                     mViewpager = findViewById(R.id.mypage_viewpager);
                     mViewpager.setAdapter(myReviewAdapter);
