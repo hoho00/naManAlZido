@@ -78,7 +78,6 @@ public class PopupActivity extends Activity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-
                     //위치가 같으면
                     if(equal(latitude,snapshot.getValue(ReviewItem.class).getLatitude())
                         && equal(longitude, snapshot.getValue(ReviewItem.class).getLongitude())){
@@ -170,15 +169,17 @@ public class PopupActivity extends Activity {
                                     DatabaseReference mDBReference = null;
                                     HashMap<String, Object> childUpdates = null;
 
-                                    mDBReference = FirebaseDatabase.getInstance().getReference("reviews");
-                                    childUpdates = new HashMap<>();
-                                    ReviewItem reviewItem = null;
-                                    Map<String, Object> reviewValue =null;
-                                    reviewItem = new ReviewItem(uid, title, content, photoUrl, time, score+10, latitude, longitude);
-                                    reviewValue = reviewItem.toMap();
+                                    snapshot.getRef().child("score").setValue(score + 10);
+                                    //mDBReference = FirebaseDatabase.getInstance().getReference("reviews");
+                                    //childUpdates = new HashMap<>();
+                                    //ReviewItem reviewItem = null;
+                                    //Map<String, Object> reviewValue =null;
+                                    //reviewItem = new ReviewItem(uid, title, content, photoUrl, time, score+10, latitude, longitude);
+                                    //reviewValue = reviewItem.toMap();
 
-                                    childUpdates.put(uid,reviewValue);
-                                    mDBReference.updateChildren(childUpdates);
+                                    //childUpdates.put(uid,reviewValue);
+                                    //snapshot.getRef().updateChildren(childUpdates);
+                                    //mDBReference.updateChildren(childUpdates);
 
                                 }
                             });
@@ -187,16 +188,17 @@ public class PopupActivity extends Activity {
                                 public void onClick(View view) {
                                     DatabaseReference mDBReference = null;
                                     HashMap<String, Object> childUpdates = null;
+                                    snapshot.getRef().child("score").setValue(score - 10);
 
-                                    mDBReference = FirebaseDatabase.getInstance().getReference("reviews");
-                                    childUpdates = new HashMap<>();
-                                    ReviewItem reviewItem = null;
-                                    Map<String, Object> reviewValue =null;
-                                    reviewItem = new ReviewItem(uid, title, content, photoUrl, time, score-10, latitude, longitude);
-                                    reviewValue = reviewItem.toMap();
-
-                                    childUpdates.put(uid,reviewValue);
-                                    mDBReference.updateChildren(childUpdates);
+//                                    mDBReference = FirebaseDatabase.getInstance().getReference("reviews");
+//                                    childUpdates = new HashMap<>();
+//                                    ReviewItem reviewItem = null;
+//                                    Map<String, Object> reviewValue =null;
+//                                    reviewItem = new ReviewItem(uid, title, content, photoUrl, time, score-10, latitude, longitude);
+//                                    reviewValue = reviewItem.toMap();
+//
+//                                    childUpdates.put(uid,reviewValue);
+//                                    mDBReference.updateChildren(childUpdates);
                                 }
                             });
 
@@ -229,7 +231,7 @@ public class PopupActivity extends Activity {
         //바깥레이어 클릭시 안닫히게
         if(event.getAction() == MotionEvent.ACTION_OUTSIDE){
             finish();
-            return false;
+            return true;
         }
         return true;
     }

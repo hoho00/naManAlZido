@@ -11,7 +11,7 @@ public class ReviewItem {
     private String review;
     private String photoUrl;
     private String time;
-    private int Score;
+    private int score;
     private double latitude;
     private double longitude;
 
@@ -23,7 +23,7 @@ public class ReviewItem {
         this.review = review;
         this.photoUrl = photoUrl;
         this.time = time;
-        Score = score;
+        score = score;
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -42,7 +42,7 @@ public class ReviewItem {
         result.put("review",review);
         result.put("photoUrl", photoUrl);
         result.put("time", time);
-        result.put("Score", Score);
+        result.put("Score", score);
 
         return result;
     }
@@ -53,7 +53,7 @@ public class ReviewItem {
         result.put("review", null);
         result.put("photoUrl", null);
         result.put("time", null);
-        result.put("Score", null);
+        result.put("score", null);
 
         return result;
     }
@@ -67,7 +67,7 @@ public class ReviewItem {
     }
 
     public int getScore() {
-        return Score;
+        return score;
     }
 
     public void setReview(String review) {
@@ -79,7 +79,7 @@ public class ReviewItem {
     }
 
     public void setScore(int score) {
-        Score = score;
+        score = score;
     }
 
     public String getUid() {
