@@ -155,10 +155,10 @@ public class CommunityMapfragment extends Fragment implements OnMapReadyCallback
         String title = markerItem.getTitle();
 
         MarkerTitle.setText(title);
-        MarkerTitle.setTextSize(10);
+        MarkerTitle.setTextSize(15);
         MarkerTitle.setTextColor(Color.WHITE);
         MarkerTime.setText(time);
-        MarkerTime.setTextSize(8);
+        MarkerTime.setTextSize(10);
         MarkerTime.setTextColor(Color.WHITE);
 
         MarkerOptions markerOptions = new MarkerOptions();
